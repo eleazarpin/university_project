@@ -11,9 +11,12 @@
 #include <string.h>
 #include <math.h>
 #include <float.h>
+#include <ctype.h>
 
 extern int yylineno;
 extern char *yytext;
+int yylex();
+void yyerror(char *msg);
 
 
 int contAVG=1; // Cantidad de expresiones de la funcion avg
@@ -53,7 +56,7 @@ void apilarWhile(int pos);
 
 int desapilarWhile();
 
-void apilarPolaca(char *strToken);
+void apilarPolaca(char *);
 void trampearPolaca(char *strToken);
 void insertarPolaca(char *s, int p);
 void generarEtiqueta();
@@ -555,7 +558,10 @@ factor:
                                         apilarPolaca($1);
                                     }
     | constanteNumerica
-    | avg                         {printf("factor: avg \n"); apilarPolaca(itoa(contAVG, stringAVG, 10)); apilarPolaca("/");}
+    | avg                         { printf("factor: avg \n");
+                                    sprintf(stringAVG, "%d", contAVG); // replaced itoa(contAVG, stringAVG, 10) for this.
+                                    apilarPolaca(stringAVG);
+                                    apilarPolaca("/");}
     ;
 avg: 
     AVG P_A C_A contenido_avg C_C P_C {printf("avg : AVG P_A C_A contenido_avg C_C P_C \n");}
@@ -570,7 +576,7 @@ constanteNumerica:
     | BOOLEANO             {validarBooleano(yylval.s);printf("constante: BOOLEANO: %s\n" , yylval.s); apilarPolaca(yylval.s);}
     ;
 constanteString: 
-    STRING_CONST           {validarString(yylval.s);printf("constante: STRING \n" , yylval.s);}
+    STRING_CONST           {validarString(yylval.s);printf("constante: STRING %s\n" , yylval.s);}
     ;
 
 escritura:
@@ -591,20 +597,20 @@ lectura:
 int validarBooleano( char Booleano[]) {
  		
  		char msg[100];
-		if ( strcmp(Booleano, "true")!= 0 && strcmp(Booleano, "false")!=0)
+		if (strcmp(Booleano, "true")!= 0 && strcmp(Booleano, "false")!=0)
 		{
-		sprintf(msg, "ERROR: %s no es un tipo booleano\n" , Booleano);
-    yyerror(msg);
+		    sprintf(msg, "ERROR: %s no es un tipo booleano\n" , Booleano);
+            yyerror(msg);
+            return 1;
 		}
 		else
-				//guardarenTS
-				{
-				//	printf("Booleano ok! %s \n", Booleano);
-					saveSymbol(Booleano,"cBool", NULL);
-        	        insertarTipo("cBool");
-					return 0;
-				}
-		
+		//guardarenTS
+		{
+		//	printf("Booleano ok! %s \n", Booleano);
+		    saveSymbol(Booleano,"cBool", NULL);
+        	insertarTipo("cBool");
+			return 0;
+		}		
 }
 
 
@@ -615,6 +621,7 @@ int validarInt(char entero[]) {
     if(casteado < -32768 || casteado > 32767) {
         sprintf(msg, "ERROR: Entero %d fuera de rango. Debe estar entre [-32768; 32767]\n", casteado);
         yyerror(msg);
+        return 1;
     } else {
         //guardarenTS
         saveSymbol(entero,"cInt", NULL);
@@ -623,7 +630,6 @@ int validarInt(char entero[]) {
         //printf solo para pruebas:
         //printf("Entero ok! %d \n", casteado);
         return 0;
-
     }
 
 }
@@ -636,14 +642,14 @@ int validarFloat(char flotante[]) {
     if(casteado < FLT_MIN || casteado > FLT_MAX) {
         sprintf(msg, "ERROR: Float %f fuera de rango. Debe estar entre [1.17549e-38; 3.40282e38]\n", casteado);
         yyerror(msg);
+        return 1;
     } else {
         saveSymbol(flotante,"cFloat", NULL);
         insertarTipo("cFloat");
-        //guardarenTS
-        //printf solo para pruebas:
-    //    printf("Float ok! %f \n", casteado);
+        // guardarenTS
+        // printf solo para pruebas:
+        // printf("Float ok! %f \n", casteado);
         return 0;
-
     }
 
 }
@@ -720,7 +726,6 @@ void consolidateIdType() {
 /* fin de funciones para que el bloque DecVar cargue la tabla de símbolos */
 
 /* funciones tabla de simbolos */
-
 char *downcase(char *p){
     char *pOrig = p;
     for ( ; *p; ++p) *p = tolower(*p);
@@ -820,6 +825,7 @@ int insertarTipo(char tipo[]) {
 int resetTipos(){
     contTipos = 0;
     strcpy(tipos[contTipos],"null");
+    return 0;
 }
 
 int compararTipos(char *a, char *b){
@@ -939,7 +945,9 @@ void generarEtiqueta(){
 
 	contEtiqueta = contEtiqueta + 1;
     
-    strcat(Etiqueta, itoa(contEtiqueta, string, 10) );
+    sprintf(string, "%d", contEtiqueta); // replaced itoa(contEtiqueta, string, 10)  for this.
+
+    strcat(Etiqueta, string);
     
 }
 
@@ -1002,17 +1010,12 @@ int main(int argc,char *argv[]){
     return 0;
 }
 
-int yyerror(char *msg){
+void yyerror(char *msg){
     system("cls");
-    fprintf(stderr, "At line %d %s \n", yylineno, msg, yytext);
+    fprintf(stderr, "At line %d %s \n", yylineno, msg);
     //fprintf(stderr, "At line %d %s in text: %s\n", yylineno, msg, yytext);
     exit(1);
 }
-
-
-
-
-
 
 void reemplazarBlancos(char *cad){
 	int i,num;
