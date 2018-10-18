@@ -1,0 +1,1765 @@
+Terminals unused in grammar
+
+   BINA
+
+
+Gramática
+
+    0 $accept: raiz $end
+
+    1 raiz: programa
+
+    2 programa: bloque_dec sentencias
+    3         | escritura
+    4         | bloque_dec
+
+    5 bloque_dec: DEFVAR declaraciones ENDDEF
+
+    6 declaraciones: declaraciones declaracion
+    7              | declaracion
+
+    8 declaracion: lista_variables D_P lista_tipos_datos
+
+    9 lista_tipos_datos: lista_tipos_datos COMA tipo_dato
+   10                  | tipo_dato
+
+   11 lista_variables: lista_variables COMA ID
+   12                | ID
+
+   13 tipo_dato: STRING
+   14          | FLOAT
+   15          | INT
+   16          | BOOL
+
+   17 sentencias: sentencias sentencia
+   18           | sentencia
+
+   19 sentencia: asignacion PUNTO_Y_COMA
+   20          | iteracion
+   21          | decision
+   22          | escritura
+   23          | lectura
+
+   24 decision: IF P_A condicion P_C L_A sentencias L_C
+
+   25 $@1: /* vacío */
+
+   26 $@2: /* vacío */
+
+   27 decision: IF P_A condicion P_C L_A sentencias L_C $@1 ELSE $@2 L_A sentencias L_C
+
+   28 $@3: /* vacío */
+
+   29 $@4: /* vacío */
+
+   30 decision: IF P_A condicion P_C L_A L_C $@3 ELSE $@4 L_A sentencias L_C
+
+   31 $@5: /* vacío */
+
+   32 iteracion: WHILE $@5 P_A condicion P_C L_A sentencias L_C
+
+   33 asignacion: ID ASIG expresion
+   34           | ID ASIG concatenacion
+
+   35 concatenacion: ID OP_CONCAT ID
+   36              | ID OP_CONCAT constanteString
+   37              | constanteString OP_CONCAT ID
+   38              | constanteString OP_CONCAT constanteString
+   39              | constanteString
+
+   40 condicion: expresion CMP_MAY expresion
+   41          | expresion CMP_MEN expresion
+   42          | expresion CMP_MAYI expresion
+   43          | expresion CMP_MENI expresion
+   44          | expresion CMP_DIST expresion
+   45          | expresion CMP_IGUAL expresion
+
+   46 $@6: /* vacío */
+
+   47 condicion: INLIST P_A ID $@6 PUNTO_Y_COMA C_A contenido_inlist C_C P_C
+
+   48 contenido_inlist: expresion
+
+   49 $@7: /* vacío */
+
+   50 contenido_inlist: contenido_inlist PUNTO_Y_COMA $@7 expresion
+
+   51 expresion: expresion OP_SUM termino
+   52          | expresion OP_RES termino
+   53          | termino
+
+   54 termino: termino OP_MUL factor
+   55        | termino OP_DIV factor
+   56        | termino DIV factor
+   57        | termino MOD factor
+   58        | factor
+
+   59 factor: P_A expresion P_C
+   60       | ID
+   61       | constanteNumerica
+   62       | avg
+
+   63 avg: AVG P_A C_A contenido_avg C_C P_C
+
+   64 contenido_avg: expresion
+   65              | contenido_avg COMA expresion
+
+   66 constanteNumerica: ENTERO
+   67                  | REAL
+   68                  | BOOLEANO
+
+   69 constanteString: STRING_CONST
+
+   70 escritura: WRITE expresion PUNTO_Y_COMA
+   71          | WRITE concatenacion PUNTO_Y_COMA
+
+   72 lectura: READ ID PUNTO_Y_COMA
+
+
+Terminales con las reglas donde aparecen
+
+$end (0) 0
+error (256)
+IF (258) 24 27 30
+ELSE (259) 27 30
+WHILE (260) 32
+DEFVAR (261) 5
+ENDDEF (262) 5
+WRITE (263) 70 71
+READ (264) 72
+AVG (265) 63
+INLIST (266) 47
+REAL (267) 67
+BINA (268)
+ENTERO (269) 66
+BOOLEANO (270) 68
+STRING_CONST (271) 69
+ID (272) 11 12 33 34 35 36 37 47 60 72
+FLOAT (273) 14
+INT (274) 15
+STRING (275) 13
+BOOL (276) 16
+P_A (277) 24 27 30 32 47 59 63
+P_C (278) 24 27 30 32 47 59 63
+C_A (279) 47 63
+C_C (280) 47 63
+L_A (281) 24 27 30 32
+L_C (282) 24 27 30 32
+PUNTO_Y_COMA (283) 19 47 50 70 71 72
+D_P (284) 8
+COMA (285) 9 11 65
+OP_CONCAT (286) 35 36 37 38
+OP_SUM (287) 51
+OP_RES (288) 52
+OP_DIV (289) 55
+OP_MUL (290) 54
+MOD (291) 57
+DIV (292) 56
+CMP_MAY (293) 40
+CMP_MEN (294) 41
+CMP_MAYI (295) 42
+CMP_MENI (296) 43
+CMP_DIST (297) 44
+CMP_IGUAL (298) 45
+ASIG (299) 33 34
+
+
+No terminales con las reglas donde aparecen
+
+$accept (45)
+    en la izquierda: 0
+raiz (46)
+    en la izquierda: 1, en la derecha: 0
+programa (47)
+    en la izquierda: 2 3 4, en la derecha: 1
+bloque_dec (48)
+    en la izquierda: 5, en la derecha: 2 4
+declaraciones (49)
+    en la izquierda: 6 7, en la derecha: 5 6
+declaracion (50)
+    en la izquierda: 8, en la derecha: 6 7
+lista_tipos_datos (51)
+    en la izquierda: 9 10, en la derecha: 8 9
+lista_variables (52)
+    en la izquierda: 11 12, en la derecha: 8 11
+tipo_dato (53)
+    en la izquierda: 13 14 15 16, en la derecha: 9 10
+sentencias (54)
+    en la izquierda: 17 18, en la derecha: 2 17 24 27 30 32
+sentencia (55)
+    en la izquierda: 19 20 21 22 23, en la derecha: 17 18
+decision (56)
+    en la izquierda: 24 27 30, en la derecha: 21
+$@1 (57)
+    en la izquierda: 25, en la derecha: 27
+$@2 (58)
+    en la izquierda: 26, en la derecha: 27
+$@3 (59)
+    en la izquierda: 28, en la derecha: 30
+$@4 (60)
+    en la izquierda: 29, en la derecha: 30
+iteracion (61)
+    en la izquierda: 32, en la derecha: 20
+$@5 (62)
+    en la izquierda: 31, en la derecha: 32
+asignacion (63)
+    en la izquierda: 33 34, en la derecha: 19
+concatenacion (64)
+    en la izquierda: 35 36 37 38 39, en la derecha: 34 71
+condicion (65)
+    en la izquierda: 40 41 42 43 44 45 47, en la derecha: 24 27 30
+    32
+$@6 (66)
+    en la izquierda: 46, en la derecha: 47
+contenido_inlist (67)
+    en la izquierda: 48 50, en la derecha: 47 50
+$@7 (68)
+    en la izquierda: 49, en la derecha: 50
+expresion (69)
+    en la izquierda: 51 52 53, en la derecha: 33 40 41 42 43 44 45
+    48 50 51 52 59 64 65 70
+termino (70)
+    en la izquierda: 54 55 56 57 58, en la derecha: 51 52 53 54 55
+    56 57
+factor (71)
+    en la izquierda: 59 60 61 62, en la derecha: 54 55 56 57 58
+avg (72)
+    en la izquierda: 63, en la derecha: 62
+contenido_avg (73)
+    en la izquierda: 64 65, en la derecha: 63 65
+constanteNumerica (74)
+    en la izquierda: 66 67 68, en la derecha: 61
+constanteString (75)
+    en la izquierda: 69, en la derecha: 36 37 38 39
+escritura (76)
+    en la izquierda: 70 71, en la derecha: 3 22
+lectura (77)
+    en la izquierda: 72, en la derecha: 23
+
+
+estado 0
+
+    0 $accept: . raiz $end
+
+    DEFVAR  desplazar e ir al estado 1
+    WRITE   desplazar e ir al estado 2
+
+    raiz        ir al estado 3
+    programa    ir al estado 4
+    bloque_dec  ir al estado 5
+    escritura   ir al estado 6
+
+
+estado 1
+
+    5 bloque_dec: DEFVAR . declaraciones ENDDEF
+
+    ID  desplazar e ir al estado 7
+
+    declaraciones    ir al estado 8
+    declaracion      ir al estado 9
+    lista_variables  ir al estado 10
+
+
+estado 2
+
+   70 escritura: WRITE . expresion PUNTO_Y_COMA
+   71          | WRITE . concatenacion PUNTO_Y_COMA
+
+    AVG           desplazar e ir al estado 11
+    REAL          desplazar e ir al estado 12
+    ENTERO        desplazar e ir al estado 13
+    BOOLEANO      desplazar e ir al estado 14
+    STRING_CONST  desplazar e ir al estado 15
+    ID            desplazar e ir al estado 16
+    P_A           desplazar e ir al estado 17
+
+    concatenacion      ir al estado 18
+    expresion          ir al estado 19
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+    constanteString    ir al estado 24
+
+
+estado 3
+
+    0 $accept: raiz . $end
+
+    $end  desplazar e ir al estado 25
+
+
+estado 4
+
+    1 raiz: programa .
+
+    $default  reduce usando la regla 1 (raiz)
+
+
+estado 5
+
+    2 programa: bloque_dec . sentencias
+    4         | bloque_dec .
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+
+    $default  reduce usando la regla 4 (programa)
+
+    sentencias  ir al estado 30
+    sentencia   ir al estado 31
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 6
+
+    3 programa: escritura .
+
+    $default  reduce usando la regla 3 (programa)
+
+
+estado 7
+
+   12 lista_variables: ID .
+
+    $default  reduce usando la regla 12 (lista_variables)
+
+
+estado 8
+
+    5 bloque_dec: DEFVAR declaraciones . ENDDEF
+    6 declaraciones: declaraciones . declaracion
+
+    ENDDEF  desplazar e ir al estado 37
+    ID      desplazar e ir al estado 7
+
+    declaracion      ir al estado 38
+    lista_variables  ir al estado 10
+
+
+estado 9
+
+    7 declaraciones: declaracion .
+
+    $default  reduce usando la regla 7 (declaraciones)
+
+
+estado 10
+
+    8 declaracion: lista_variables . D_P lista_tipos_datos
+   11 lista_variables: lista_variables . COMA ID
+
+    D_P   desplazar e ir al estado 39
+    COMA  desplazar e ir al estado 40
+
+
+estado 11
+
+   63 avg: AVG . P_A C_A contenido_avg C_C P_C
+
+    P_A  desplazar e ir al estado 41
+
+
+estado 12
+
+   67 constanteNumerica: REAL .
+
+    $default  reduce usando la regla 67 (constanteNumerica)
+
+
+estado 13
+
+   66 constanteNumerica: ENTERO .
+
+    $default  reduce usando la regla 66 (constanteNumerica)
+
+
+estado 14
+
+   68 constanteNumerica: BOOLEANO .
+
+    $default  reduce usando la regla 68 (constanteNumerica)
+
+
+estado 15
+
+   69 constanteString: STRING_CONST .
+
+    $default  reduce usando la regla 69 (constanteString)
+
+
+estado 16
+
+   35 concatenacion: ID . OP_CONCAT ID
+   36              | ID . OP_CONCAT constanteString
+   60 factor: ID .
+
+    OP_CONCAT  desplazar e ir al estado 42
+
+    $default  reduce usando la regla 60 (factor)
+
+
+estado 17
+
+   59 factor: P_A . expresion P_C
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 44
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 18
+
+   71 escritura: WRITE concatenacion . PUNTO_Y_COMA
+
+    PUNTO_Y_COMA  desplazar e ir al estado 45
+
+
+estado 19
+
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+   70 escritura: WRITE expresion . PUNTO_Y_COMA
+
+    PUNTO_Y_COMA  desplazar e ir al estado 46
+    OP_SUM        desplazar e ir al estado 47
+    OP_RES        desplazar e ir al estado 48
+
+
+estado 20
+
+   53 expresion: termino .
+   54 termino: termino . OP_MUL factor
+   55        | termino . OP_DIV factor
+   56        | termino . DIV factor
+   57        | termino . MOD factor
+
+    OP_DIV  desplazar e ir al estado 49
+    OP_MUL  desplazar e ir al estado 50
+    MOD     desplazar e ir al estado 51
+    DIV     desplazar e ir al estado 52
+
+    $default  reduce usando la regla 53 (expresion)
+
+
+estado 21
+
+   58 termino: factor .
+
+    $default  reduce usando la regla 58 (termino)
+
+
+estado 22
+
+   62 factor: avg .
+
+    $default  reduce usando la regla 62 (factor)
+
+
+estado 23
+
+   61 factor: constanteNumerica .
+
+    $default  reduce usando la regla 61 (factor)
+
+
+estado 24
+
+   37 concatenacion: constanteString . OP_CONCAT ID
+   38              | constanteString . OP_CONCAT constanteString
+   39              | constanteString .
+
+    OP_CONCAT  desplazar e ir al estado 53
+
+    $default  reduce usando la regla 39 (concatenacion)
+
+
+estado 25
+
+    0 $accept: raiz $end .
+
+    $default  aceptar
+
+
+estado 26
+
+   24 decision: IF . P_A condicion P_C L_A sentencias L_C
+   27         | IF . P_A condicion P_C L_A sentencias L_C $@1 ELSE $@2 L_A sentencias L_C
+   30         | IF . P_A condicion P_C L_A L_C $@3 ELSE $@4 L_A sentencias L_C
+
+    P_A  desplazar e ir al estado 54
+
+
+estado 27
+
+   32 iteracion: WHILE . $@5 P_A condicion P_C L_A sentencias L_C
+
+    $default  reduce usando la regla 31 ($@5)
+
+    $@5  ir al estado 55
+
+
+estado 28
+
+   72 lectura: READ . ID PUNTO_Y_COMA
+
+    ID  desplazar e ir al estado 56
+
+
+estado 29
+
+   33 asignacion: ID . ASIG expresion
+   34           | ID . ASIG concatenacion
+
+    ASIG  desplazar e ir al estado 57
+
+
+estado 30
+
+    2 programa: bloque_dec sentencias .
+   17 sentencias: sentencias . sentencia
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+
+    $default  reduce usando la regla 2 (programa)
+
+    sentencia   ir al estado 58
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 31
+
+   18 sentencias: sentencia .
+
+    $default  reduce usando la regla 18 (sentencias)
+
+
+estado 32
+
+   21 sentencia: decision .
+
+    $default  reduce usando la regla 21 (sentencia)
+
+
+estado 33
+
+   20 sentencia: iteracion .
+
+    $default  reduce usando la regla 20 (sentencia)
+
+
+estado 34
+
+   19 sentencia: asignacion . PUNTO_Y_COMA
+
+    PUNTO_Y_COMA  desplazar e ir al estado 59
+
+
+estado 35
+
+   22 sentencia: escritura .
+
+    $default  reduce usando la regla 22 (sentencia)
+
+
+estado 36
+
+   23 sentencia: lectura .
+
+    $default  reduce usando la regla 23 (sentencia)
+
+
+estado 37
+
+    5 bloque_dec: DEFVAR declaraciones ENDDEF .
+
+    $default  reduce usando la regla 5 (bloque_dec)
+
+
+estado 38
+
+    6 declaraciones: declaraciones declaracion .
+
+    $default  reduce usando la regla 6 (declaraciones)
+
+
+estado 39
+
+    8 declaracion: lista_variables D_P . lista_tipos_datos
+
+    FLOAT   desplazar e ir al estado 60
+    INT     desplazar e ir al estado 61
+    STRING  desplazar e ir al estado 62
+    BOOL    desplazar e ir al estado 63
+
+    lista_tipos_datos  ir al estado 64
+    tipo_dato          ir al estado 65
+
+
+estado 40
+
+   11 lista_variables: lista_variables COMA . ID
+
+    ID  desplazar e ir al estado 66
+
+
+estado 41
+
+   63 avg: AVG P_A . C_A contenido_avg C_C P_C
+
+    C_A  desplazar e ir al estado 67
+
+
+estado 42
+
+   35 concatenacion: ID OP_CONCAT . ID
+   36              | ID OP_CONCAT . constanteString
+
+    STRING_CONST  desplazar e ir al estado 15
+    ID            desplazar e ir al estado 68
+
+    constanteString  ir al estado 69
+
+
+estado 43
+
+   60 factor: ID .
+
+    $default  reduce usando la regla 60 (factor)
+
+
+estado 44
+
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+   59 factor: P_A expresion . P_C
+
+    P_C     desplazar e ir al estado 70
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+
+estado 45
+
+   71 escritura: WRITE concatenacion PUNTO_Y_COMA .
+
+    $default  reduce usando la regla 71 (escritura)
+
+
+estado 46
+
+   70 escritura: WRITE expresion PUNTO_Y_COMA .
+
+    $default  reduce usando la regla 70 (escritura)
+
+
+estado 47
+
+   51 expresion: expresion OP_SUM . termino
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    termino            ir al estado 71
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 48
+
+   52 expresion: expresion OP_RES . termino
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    termino            ir al estado 72
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 49
+
+   55 termino: termino OP_DIV . factor
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    factor             ir al estado 73
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 50
+
+   54 termino: termino OP_MUL . factor
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    factor             ir al estado 74
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 51
+
+   57 termino: termino MOD . factor
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    factor             ir al estado 75
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 52
+
+   56 termino: termino DIV . factor
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    factor             ir al estado 76
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 53
+
+   37 concatenacion: constanteString OP_CONCAT . ID
+   38              | constanteString OP_CONCAT . constanteString
+
+    STRING_CONST  desplazar e ir al estado 15
+    ID            desplazar e ir al estado 77
+
+    constanteString  ir al estado 78
+
+
+estado 54
+
+   24 decision: IF P_A . condicion P_C L_A sentencias L_C
+   27         | IF P_A . condicion P_C L_A sentencias L_C $@1 ELSE $@2 L_A sentencias L_C
+   30         | IF P_A . condicion P_C L_A L_C $@3 ELSE $@4 L_A sentencias L_C
+
+    AVG       desplazar e ir al estado 11
+    INLIST    desplazar e ir al estado 79
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    condicion          ir al estado 80
+    expresion          ir al estado 81
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 55
+
+   32 iteracion: WHILE $@5 . P_A condicion P_C L_A sentencias L_C
+
+    P_A  desplazar e ir al estado 82
+
+
+estado 56
+
+   72 lectura: READ ID . PUNTO_Y_COMA
+
+    PUNTO_Y_COMA  desplazar e ir al estado 83
+
+
+estado 57
+
+   33 asignacion: ID ASIG . expresion
+   34           | ID ASIG . concatenacion
+
+    AVG           desplazar e ir al estado 11
+    REAL          desplazar e ir al estado 12
+    ENTERO        desplazar e ir al estado 13
+    BOOLEANO      desplazar e ir al estado 14
+    STRING_CONST  desplazar e ir al estado 15
+    ID            desplazar e ir al estado 16
+    P_A           desplazar e ir al estado 17
+
+    concatenacion      ir al estado 84
+    expresion          ir al estado 85
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+    constanteString    ir al estado 24
+
+
+estado 58
+
+   17 sentencias: sentencias sentencia .
+
+    $default  reduce usando la regla 17 (sentencias)
+
+
+estado 59
+
+   19 sentencia: asignacion PUNTO_Y_COMA .
+
+    $default  reduce usando la regla 19 (sentencia)
+
+
+estado 60
+
+   14 tipo_dato: FLOAT .
+
+    $default  reduce usando la regla 14 (tipo_dato)
+
+
+estado 61
+
+   15 tipo_dato: INT .
+
+    $default  reduce usando la regla 15 (tipo_dato)
+
+
+estado 62
+
+   13 tipo_dato: STRING .
+
+    $default  reduce usando la regla 13 (tipo_dato)
+
+
+estado 63
+
+   16 tipo_dato: BOOL .
+
+    $default  reduce usando la regla 16 (tipo_dato)
+
+
+estado 64
+
+    8 declaracion: lista_variables D_P lista_tipos_datos .
+    9 lista_tipos_datos: lista_tipos_datos . COMA tipo_dato
+
+    COMA  desplazar e ir al estado 86
+
+    $default  reduce usando la regla 8 (declaracion)
+
+
+estado 65
+
+   10 lista_tipos_datos: tipo_dato .
+
+    $default  reduce usando la regla 10 (lista_tipos_datos)
+
+
+estado 66
+
+   11 lista_variables: lista_variables COMA ID .
+
+    $default  reduce usando la regla 11 (lista_variables)
+
+
+estado 67
+
+   63 avg: AVG P_A C_A . contenido_avg C_C P_C
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 87
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    contenido_avg      ir al estado 88
+    constanteNumerica  ir al estado 23
+
+
+estado 68
+
+   35 concatenacion: ID OP_CONCAT ID .
+
+    $default  reduce usando la regla 35 (concatenacion)
+
+
+estado 69
+
+   36 concatenacion: ID OP_CONCAT constanteString .
+
+    $default  reduce usando la regla 36 (concatenacion)
+
+
+estado 70
+
+   59 factor: P_A expresion P_C .
+
+    $default  reduce usando la regla 59 (factor)
+
+
+estado 71
+
+   51 expresion: expresion OP_SUM termino .
+   54 termino: termino . OP_MUL factor
+   55        | termino . OP_DIV factor
+   56        | termino . DIV factor
+   57        | termino . MOD factor
+
+    OP_DIV  desplazar e ir al estado 49
+    OP_MUL  desplazar e ir al estado 50
+    MOD     desplazar e ir al estado 51
+    DIV     desplazar e ir al estado 52
+
+    $default  reduce usando la regla 51 (expresion)
+
+
+estado 72
+
+   52 expresion: expresion OP_RES termino .
+   54 termino: termino . OP_MUL factor
+   55        | termino . OP_DIV factor
+   56        | termino . DIV factor
+   57        | termino . MOD factor
+
+    OP_DIV  desplazar e ir al estado 49
+    OP_MUL  desplazar e ir al estado 50
+    MOD     desplazar e ir al estado 51
+    DIV     desplazar e ir al estado 52
+
+    $default  reduce usando la regla 52 (expresion)
+
+
+estado 73
+
+   55 termino: termino OP_DIV factor .
+
+    $default  reduce usando la regla 55 (termino)
+
+
+estado 74
+
+   54 termino: termino OP_MUL factor .
+
+    $default  reduce usando la regla 54 (termino)
+
+
+estado 75
+
+   57 termino: termino MOD factor .
+
+    $default  reduce usando la regla 57 (termino)
+
+
+estado 76
+
+   56 termino: termino DIV factor .
+
+    $default  reduce usando la regla 56 (termino)
+
+
+estado 77
+
+   37 concatenacion: constanteString OP_CONCAT ID .
+
+    $default  reduce usando la regla 37 (concatenacion)
+
+
+estado 78
+
+   38 concatenacion: constanteString OP_CONCAT constanteString .
+
+    $default  reduce usando la regla 38 (concatenacion)
+
+
+estado 79
+
+   47 condicion: INLIST . P_A ID $@6 PUNTO_Y_COMA C_A contenido_inlist C_C P_C
+
+    P_A  desplazar e ir al estado 89
+
+
+estado 80
+
+   24 decision: IF P_A condicion . P_C L_A sentencias L_C
+   27         | IF P_A condicion . P_C L_A sentencias L_C $@1 ELSE $@2 L_A sentencias L_C
+   30         | IF P_A condicion . P_C L_A L_C $@3 ELSE $@4 L_A sentencias L_C
+
+    P_C  desplazar e ir al estado 90
+
+
+estado 81
+
+   40 condicion: expresion . CMP_MAY expresion
+   41          | expresion . CMP_MEN expresion
+   42          | expresion . CMP_MAYI expresion
+   43          | expresion . CMP_MENI expresion
+   44          | expresion . CMP_DIST expresion
+   45          | expresion . CMP_IGUAL expresion
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM     desplazar e ir al estado 47
+    OP_RES     desplazar e ir al estado 48
+    CMP_MAY    desplazar e ir al estado 91
+    CMP_MEN    desplazar e ir al estado 92
+    CMP_MAYI   desplazar e ir al estado 93
+    CMP_MENI   desplazar e ir al estado 94
+    CMP_DIST   desplazar e ir al estado 95
+    CMP_IGUAL  desplazar e ir al estado 96
+
+
+estado 82
+
+   32 iteracion: WHILE $@5 P_A . condicion P_C L_A sentencias L_C
+
+    AVG       desplazar e ir al estado 11
+    INLIST    desplazar e ir al estado 79
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    condicion          ir al estado 97
+    expresion          ir al estado 81
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 83
+
+   72 lectura: READ ID PUNTO_Y_COMA .
+
+    $default  reduce usando la regla 72 (lectura)
+
+
+estado 84
+
+   34 asignacion: ID ASIG concatenacion .
+
+    $default  reduce usando la regla 34 (asignacion)
+
+
+estado 85
+
+   33 asignacion: ID ASIG expresion .
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 33 (asignacion)
+
+
+estado 86
+
+    9 lista_tipos_datos: lista_tipos_datos COMA . tipo_dato
+
+    FLOAT   desplazar e ir al estado 60
+    INT     desplazar e ir al estado 61
+    STRING  desplazar e ir al estado 62
+    BOOL    desplazar e ir al estado 63
+
+    tipo_dato  ir al estado 98
+
+
+estado 87
+
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+   64 contenido_avg: expresion .
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 64 (contenido_avg)
+
+
+estado 88
+
+   63 avg: AVG P_A C_A contenido_avg . C_C P_C
+   65 contenido_avg: contenido_avg . COMA expresion
+
+    C_C   desplazar e ir al estado 99
+    COMA  desplazar e ir al estado 100
+
+
+estado 89
+
+   47 condicion: INLIST P_A . ID $@6 PUNTO_Y_COMA C_A contenido_inlist C_C P_C
+
+    ID  desplazar e ir al estado 101
+
+
+estado 90
+
+   24 decision: IF P_A condicion P_C . L_A sentencias L_C
+   27         | IF P_A condicion P_C . L_A sentencias L_C $@1 ELSE $@2 L_A sentencias L_C
+   30         | IF P_A condicion P_C . L_A L_C $@3 ELSE $@4 L_A sentencias L_C
+
+    L_A  desplazar e ir al estado 102
+
+
+estado 91
+
+   40 condicion: expresion CMP_MAY . expresion
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 103
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 92
+
+   41 condicion: expresion CMP_MEN . expresion
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 104
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 93
+
+   42 condicion: expresion CMP_MAYI . expresion
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 105
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 94
+
+   43 condicion: expresion CMP_MENI . expresion
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 106
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 95
+
+   44 condicion: expresion CMP_DIST . expresion
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 107
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 96
+
+   45 condicion: expresion CMP_IGUAL . expresion
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 108
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 97
+
+   32 iteracion: WHILE $@5 P_A condicion . P_C L_A sentencias L_C
+
+    P_C  desplazar e ir al estado 109
+
+
+estado 98
+
+    9 lista_tipos_datos: lista_tipos_datos COMA tipo_dato .
+
+    $default  reduce usando la regla 9 (lista_tipos_datos)
+
+
+estado 99
+
+   63 avg: AVG P_A C_A contenido_avg C_C . P_C
+
+    P_C  desplazar e ir al estado 110
+
+
+estado 100
+
+   65 contenido_avg: contenido_avg COMA . expresion
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 111
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 101
+
+   47 condicion: INLIST P_A ID . $@6 PUNTO_Y_COMA C_A contenido_inlist C_C P_C
+
+    $default  reduce usando la regla 46 ($@6)
+
+    $@6  ir al estado 112
+
+
+estado 102
+
+   24 decision: IF P_A condicion P_C L_A . sentencias L_C
+   27         | IF P_A condicion P_C L_A . sentencias L_C $@1 ELSE $@2 L_A sentencias L_C
+   30         | IF P_A condicion P_C L_A . L_C $@3 ELSE $@4 L_A sentencias L_C
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+    L_C    desplazar e ir al estado 113
+
+    sentencias  ir al estado 114
+    sentencia   ir al estado 31
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 103
+
+   40 condicion: expresion CMP_MAY expresion .
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 40 (condicion)
+
+
+estado 104
+
+   41 condicion: expresion CMP_MEN expresion .
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 41 (condicion)
+
+
+estado 105
+
+   42 condicion: expresion CMP_MAYI expresion .
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 42 (condicion)
+
+
+estado 106
+
+   43 condicion: expresion CMP_MENI expresion .
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 43 (condicion)
+
+
+estado 107
+
+   44 condicion: expresion CMP_DIST expresion .
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 44 (condicion)
+
+
+estado 108
+
+   45 condicion: expresion CMP_IGUAL expresion .
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 45 (condicion)
+
+
+estado 109
+
+   32 iteracion: WHILE $@5 P_A condicion P_C . L_A sentencias L_C
+
+    L_A  desplazar e ir al estado 115
+
+
+estado 110
+
+   63 avg: AVG P_A C_A contenido_avg C_C P_C .
+
+    $default  reduce usando la regla 63 (avg)
+
+
+estado 111
+
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+   65 contenido_avg: contenido_avg COMA expresion .
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 65 (contenido_avg)
+
+
+estado 112
+
+   47 condicion: INLIST P_A ID $@6 . PUNTO_Y_COMA C_A contenido_inlist C_C P_C
+
+    PUNTO_Y_COMA  desplazar e ir al estado 116
+
+
+estado 113
+
+   30 decision: IF P_A condicion P_C L_A L_C . $@3 ELSE $@4 L_A sentencias L_C
+
+    $default  reduce usando la regla 28 ($@3)
+
+    $@3  ir al estado 117
+
+
+estado 114
+
+   17 sentencias: sentencias . sentencia
+   24 decision: IF P_A condicion P_C L_A sentencias . L_C
+   27         | IF P_A condicion P_C L_A sentencias . L_C $@1 ELSE $@2 L_A sentencias L_C
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+    L_C    desplazar e ir al estado 118
+
+    sentencia   ir al estado 58
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 115
+
+   32 iteracion: WHILE $@5 P_A condicion P_C L_A . sentencias L_C
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+
+    sentencias  ir al estado 119
+    sentencia   ir al estado 31
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 116
+
+   47 condicion: INLIST P_A ID $@6 PUNTO_Y_COMA . C_A contenido_inlist C_C P_C
+
+    C_A  desplazar e ir al estado 120
+
+
+estado 117
+
+   30 decision: IF P_A condicion P_C L_A L_C $@3 . ELSE $@4 L_A sentencias L_C
+
+    ELSE  desplazar e ir al estado 121
+
+
+estado 118
+
+   24 decision: IF P_A condicion P_C L_A sentencias L_C .
+   27         | IF P_A condicion P_C L_A sentencias L_C . $@1 ELSE $@2 L_A sentencias L_C
+
+    ELSE      reduce usando la regla 25 ($@1)
+    $default  reduce usando la regla 24 (decision)
+
+    $@1  ir al estado 122
+
+
+estado 119
+
+   17 sentencias: sentencias . sentencia
+   32 iteracion: WHILE $@5 P_A condicion P_C L_A sentencias . L_C
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+    L_C    desplazar e ir al estado 123
+
+    sentencia   ir al estado 58
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 120
+
+   47 condicion: INLIST P_A ID $@6 PUNTO_Y_COMA C_A . contenido_inlist C_C P_C
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    contenido_inlist   ir al estado 124
+    expresion          ir al estado 125
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 121
+
+   30 decision: IF P_A condicion P_C L_A L_C $@3 ELSE . $@4 L_A sentencias L_C
+
+    $default  reduce usando la regla 29 ($@4)
+
+    $@4  ir al estado 126
+
+
+estado 122
+
+   27 decision: IF P_A condicion P_C L_A sentencias L_C $@1 . ELSE $@2 L_A sentencias L_C
+
+    ELSE  desplazar e ir al estado 127
+
+
+estado 123
+
+   32 iteracion: WHILE $@5 P_A condicion P_C L_A sentencias L_C .
+
+    $default  reduce usando la regla 32 (iteracion)
+
+
+estado 124
+
+   47 condicion: INLIST P_A ID $@6 PUNTO_Y_COMA C_A contenido_inlist . C_C P_C
+   50 contenido_inlist: contenido_inlist . PUNTO_Y_COMA $@7 expresion
+
+    C_C           desplazar e ir al estado 128
+    PUNTO_Y_COMA  desplazar e ir al estado 129
+
+
+estado 125
+
+   48 contenido_inlist: expresion .
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 48 (contenido_inlist)
+
+
+estado 126
+
+   30 decision: IF P_A condicion P_C L_A L_C $@3 ELSE $@4 . L_A sentencias L_C
+
+    L_A  desplazar e ir al estado 130
+
+
+estado 127
+
+   27 decision: IF P_A condicion P_C L_A sentencias L_C $@1 ELSE . $@2 L_A sentencias L_C
+
+    $default  reduce usando la regla 26 ($@2)
+
+    $@2  ir al estado 131
+
+
+estado 128
+
+   47 condicion: INLIST P_A ID $@6 PUNTO_Y_COMA C_A contenido_inlist C_C . P_C
+
+    P_C  desplazar e ir al estado 132
+
+
+estado 129
+
+   50 contenido_inlist: contenido_inlist PUNTO_Y_COMA . $@7 expresion
+
+    $default  reduce usando la regla 49 ($@7)
+
+    $@7  ir al estado 133
+
+
+estado 130
+
+   30 decision: IF P_A condicion P_C L_A L_C $@3 ELSE $@4 L_A . sentencias L_C
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+
+    sentencias  ir al estado 134
+    sentencia   ir al estado 31
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 131
+
+   27 decision: IF P_A condicion P_C L_A sentencias L_C $@1 ELSE $@2 . L_A sentencias L_C
+
+    L_A  desplazar e ir al estado 135
+
+
+estado 132
+
+   47 condicion: INLIST P_A ID $@6 PUNTO_Y_COMA C_A contenido_inlist C_C P_C .
+
+    $default  reduce usando la regla 47 (condicion)
+
+
+estado 133
+
+   50 contenido_inlist: contenido_inlist PUNTO_Y_COMA $@7 . expresion
+
+    AVG       desplazar e ir al estado 11
+    REAL      desplazar e ir al estado 12
+    ENTERO    desplazar e ir al estado 13
+    BOOLEANO  desplazar e ir al estado 14
+    ID        desplazar e ir al estado 43
+    P_A       desplazar e ir al estado 17
+
+    expresion          ir al estado 136
+    termino            ir al estado 20
+    factor             ir al estado 21
+    avg                ir al estado 22
+    constanteNumerica  ir al estado 23
+
+
+estado 134
+
+   17 sentencias: sentencias . sentencia
+   30 decision: IF P_A condicion P_C L_A L_C $@3 ELSE $@4 L_A sentencias . L_C
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+    L_C    desplazar e ir al estado 137
+
+    sentencia   ir al estado 58
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 135
+
+   27 decision: IF P_A condicion P_C L_A sentencias L_C $@1 ELSE $@2 L_A . sentencias L_C
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+
+    sentencias  ir al estado 138
+    sentencia   ir al estado 31
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 136
+
+   50 contenido_inlist: contenido_inlist PUNTO_Y_COMA $@7 expresion .
+   51 expresion: expresion . OP_SUM termino
+   52          | expresion . OP_RES termino
+
+    OP_SUM  desplazar e ir al estado 47
+    OP_RES  desplazar e ir al estado 48
+
+    $default  reduce usando la regla 50 (contenido_inlist)
+
+
+estado 137
+
+   30 decision: IF P_A condicion P_C L_A L_C $@3 ELSE $@4 L_A sentencias L_C .
+
+    $default  reduce usando la regla 30 (decision)
+
+
+estado 138
+
+   17 sentencias: sentencias . sentencia
+   27 decision: IF P_A condicion P_C L_A sentencias L_C $@1 ELSE $@2 L_A sentencias . L_C
+
+    IF     desplazar e ir al estado 26
+    WHILE  desplazar e ir al estado 27
+    WRITE  desplazar e ir al estado 2
+    READ   desplazar e ir al estado 28
+    ID     desplazar e ir al estado 29
+    L_C    desplazar e ir al estado 139
+
+    sentencia   ir al estado 58
+    decision    ir al estado 32
+    iteracion   ir al estado 33
+    asignacion  ir al estado 34
+    escritura   ir al estado 35
+    lectura     ir al estado 36
+
+
+estado 139
+
+   27 decision: IF P_A condicion P_C L_A sentencias L_C $@1 ELSE $@2 L_A sentencias L_C .
+
+    $default  reduce usando la regla 27 (decision)
