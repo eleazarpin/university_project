@@ -228,251 +228,231 @@ void consolidateIdType();
 
 
 %%
-raiz: programa { printf("Compila OK \n"); CrearSymbolTable(symbolTable,"ts.txt");grabarPolaca(); }
+raiz: programa {    printf("Compila OK \n"); 
+                    CrearSymbolTable(symbolTable,"ts.txt");
+                    grabarPolaca(); }
     ;
+
 programa:
-    bloque_dec sentencias   {printf("programa: bloque_dec sentencias \n");}
-    | escritura             {printf("programa: escritura \n");}
-    | bloque_dec            {printf("programa: bloque_dec \n");}
+    bloque_dec sentencias   {   printf("programa: bloque_dec sentencias \n");   }
+    | escritura             {   printf("programa: escritura \n");   }
+    | bloque_dec            {   printf("programa: bloque_dec \n");  }
     ;
+
 bloque_dec: 
-    DEFVAR declaraciones ENDDEF {consolidateIdType();printf(" bloque_dec : DEFVAR declaraciones ENDDEF \n ");}
+    DEFVAR declaraciones ENDDEF {   consolidateIdType();
+                                    printf(" bloque_dec : DEFVAR declaraciones ENDDEF \n ");    }
     ;
+
 declaraciones: 
-    declaraciones declaracion    {printf("declaraciones: declaraciones declaracion \n");}
-    | declaracion                {printf("declaraciones: declaracion  \n");}
+    declaraciones declaracion    {  printf("declaraciones: declaraciones declaracion \n");  }
+    | declaracion                {  printf("declaraciones: declaracion \n");    }
     ;
+
 declaracion:
-    lista_variables D_P lista_tipos_datos {verificarBalanceo() ; printf("declaracion: lista_variables D_P lista_tipos_datos \n");}
+    lista_variables D_P lista_tipos_datos   {   verificarBalanceo(); 
+                                                printf("declaracion: lista_variables D_P lista_tipos_datos \n");    }
     ;
+
 lista_tipos_datos: 
-    lista_tipos_datos COMA tipo_dato {longListaTipos++; printf("\nlista_tipos_datos: lista_tipos_datos COMA tipo_dato \n");}
-    | tipo_dato {longListaTipos++;                      printf("\nlista_tipos_datos: tipo_dato \n");}
+    lista_tipos_datos COMA tipo_dato    {   longListaTipos++; 
+                                            printf("\nlista_tipos_datos: lista_tipos_datos COMA tipo_dato \n"); }
+    | tipo_dato                         {   longListaTipos++;
+                                            printf("\nlista_tipos_datos: tipo_dato \n");    }
     ;
+
 lista_variables: 
-    lista_variables COMA ID { longListaId++; collectId(yylval.s);  printf("\nlista_variables: lista_variables COMA ID: %s\n", yylval.s);}
-    | ID { longListaId++; collectId(yylval.s); printf("lista_variables: ID: %s\n", yylval.s);}
+    lista_variables COMA ID {   longListaId++; 
+                                collectId(yylval.s);
+                                printf("\nlista_variables: lista_variables COMA ID: %s\n", yylval.s);   }
+    | ID    {   longListaId++;
+                collectId(yylval.s); printf("lista_variables: ID: %s\n", yylval.s); }
     ;
+
 tipo_dato: 
-    STRING      { collectType("string") ; printf("tipo_dato: STRING \n\n");}
-    | FLOAT     { collectType("float") ;printf("tipo_dato: FLOAT \n\n");}
-    | INT       { collectType("int") ;printf("tipo_dato: INT \n\n");}
-    | BOOL      { collectType("bool") ;printf("tipo_dato: BOOL \n\n");}
+    STRING      {   collectType("string"); 
+                    printf("tipo_dato: STRING \n\n");   }
+    | FLOAT     {   collectType("float");
+                    printf("tipo_dato: FLOAT \n\n");    }
+    | INT       {   collectType("int");
+                    printf("tipo_dato: INT \n\n");  }
+    | BOOL      {   collectType("bool");
+                    printf("tipo_dato: BOOL \n\n"); }
     ;
+
 sentencias: 
-    sentencias sentencia  {printf("sentencias: sentencias sentencia\n");}
-    | sentencia           {printf("sentencias: sentencia \n");}
+    sentencias sentencia    {   printf("sentencias: sentencias sentencia\n");   }
+    | sentencia             {   printf("sentencias: sentencia \n"); }
     ;
+
 sentencia: 
-    asignacion PUNTO_Y_COMA {printf("sentencia: asignacion PUNTO_Y_COMA\n");}
-    | iteracion             {printf("sentencia: iteracion \n");}
-    | decision              {printf("sentencia: decision \n");}
-    | escritura             {printf("sentencia: escritura \n");}
-    | lectura               {printf("sentencia: lectura \n");}
+    asignacion PUNTO_Y_COMA {   printf("sentencia: asignacion PUNTO_Y_COMA\n"); }
+    | iteracion             {   printf("sentencia: iteracion \n");  }
+    | decision              {   printf("sentencia: decision \n");   }
+    | escritura             {   printf("sentencia: escritura \n");  }
+    | lectura               {   printf("sentencia: lectura \n");    }
    	;
+
 decision: 
-    IF P_A condicion P_C L_A sentencias L_C {printf("decision: IF P_A condicion P_C L_A sentencias L_C\n");
+    IF P_A condicion P_C L_A sentencias L_C {   printf("decision: IF P_A condicion P_C L_A sentencias L_C\n");
                                                 desapilarEtiqueta();
-                                               
                                                 strcat(Etiqueta,":");
-                                                
                                                 apilarPolaca(Etiqueta);
                                              }
-   | IF P_A condicion P_C L_A sentencias L_C {
-       printf("fin del then\n");
-       
-       strcpy(auxInlist,Etiqueta);
-       strcat(auxInlist,":");
-                            
-       generarEtiqueta();//fin
-       
-
-       apilarPolaca(Etiqueta);//fin
-       apilarPolaca("JMP");
-
-       apilarPolaca(auxInlist);
-
-       desapilarEtiqueta();
-       strcat(Etiqueta,":");
-      
-       apilarEtiqueta(Etiqueta);
-
-// aca esta la magia
-// aca termina la magia
-   }
-
-   ELSE
-                                            {printf("else\n");
-                                        }
-    L_A sentencias L_C
-                                            {printf("fin del else\n");
-                                            desapilarEtiqueta();
-                                            //strcat(EtiqDesa,":");
-                                            apilarPolaca(EtiqDesa);
-                                            ;}
-    
-    | IF P_A condicion P_C L_A  L_C {
-         printf("fin del then\n");
-       generarEtiqueta();//fin
-       apilarPolaca(Etiqueta);//fin
-       apilarPolaca("JMP");
-       desapilarEtiqueta();
-       strcat(EtiqDesa,":");
-       apilarPolaca(EtiqDesa);
-       apilarEtiqueta(Etiqueta);
-   
-   }
-
-   ELSE
-                                            {printf("else\n");
-                                        }
-    L_A sentencias L_C
-                                            {printf("fin del else\n");
-                                            desapilarEtiqueta();
-                                            strcat(EtiqDesa,":");                                           
-                                            apilarPolaca(EtiqDesa);
-                                            ;}
+   | IF P_A condicion P_C L_A sentencias L_C {  printf("fin del then\n");
+                                                strcpy(auxInlist,Etiqueta);
+                                                strcat(auxInlist,":");
+                                                generarEtiqueta();
+                                                apilarPolaca(Etiqueta);
+                                                apilarPolaca("JMP");
+                                                apilarPolaca(auxInlist);
+                                                desapilarEtiqueta();
+                                                strcat(Etiqueta,":");
+                                                // aca esta la magia
+                                                // aca termina la magia 
+                                                apilarEtiqueta(Etiqueta);   }
+    ELSE                                    {   printf("else\n");   }
+    L_A sentencias L_C                      {   printf("fin del else\n");
+                                                desapilarEtiqueta();
+                                                //strcat(EtiqDesa,":");
+                                                apilarPolaca(EtiqDesa); }
+    | IF P_A condicion P_C L_A  L_C         {   printf("fin del then\n");
+                                                generarEtiqueta();//fin
+                                                apilarPolaca(Etiqueta);//fin
+                                                apilarPolaca("JMP");
+                                                desapilarEtiqueta();
+                                                strcat(EtiqDesa,":");
+                                                apilarPolaca(EtiqDesa);
+                                                apilarEtiqueta(Etiqueta);   }
+    ELSE                                     {   printf("else\n");   }
+    L_A sentencias L_C                      {   printf("fin del else\n");
+                                                desapilarEtiqueta();
+                                                strcat(EtiqDesa,":");                                           
+                                                apilarPolaca(EtiqDesa); }
    ;
- 
 
 iteracion: 
-    WHILE {
-            printf("while\n");
-            generarEtiqueta();//fin
-            apilarEtiquetaW(Etiqueta);
-            strcat(Etiqueta, ":");
-            apilarPolaca(Etiqueta);//fin
-
-            }
-    P_A condicion P_C L_A sentencias L_C {
-                                                     printf("\niteracion: WHILE P_A condicion P_C L_A sentencias\n");
-                                                     desapilarEtiquetaW(); 
-                                                     apilarPolaca(EtiqDesaW);//inicio
-                                                     //printf("\nEtiqDesa: %s\n\n",EtiqDesa);
-                                                     //printf("EtiqDesaW: %s\n\n",EtiqDesaW);
-                                                     //printf("Etiqueta: %s\n\n",Etiqueta);
-                                                     apilarPolaca("JMP");
-                                                     desapilarEtiqueta();
-                                                     
-                                                     //strcat(EtiqDesa,":");
-                                                    if(auxBool==0){
-                                                       printf("PASOOOO 1 \n\n");
-                                                       strcat(EtiqDesa,":");
-                                                       apilarPolaca(EtiqDesa);
-                                                        }
-                                                      else{   printf("PASOOOO 2 \n\n");
-                                                              strcat(auxInlistwhile,":");
-                                                              apilarPolaca(auxInlistwhile);
-                                                              strcpy (auxInlistwhile, "");
-                                                              auxBool=0;
-                                                            }
-                                                     //strcat(Etiqueta,":");
-                                                     //printf("EtiqDesa: %s\n\n",EtiqDesa);
-                                                     //printf("EtiqDesaW: %s\n\n",EtiqDesaW);
-                                                     ///printf("Etiqueta: %s\n\n",Etiqueta);
-                                                     //printf("AUXBOOL en WHILE: %d\n\n",auxBool);
-                                                     //apilarPolaca(EtiqDesa);
-                                                    // apilarPolaca(Etiqueta);
+    WHILE   {   printf("while\n");
+                generarEtiqueta();//fin
+                apilarEtiquetaW(Etiqueta);
+                strcat(Etiqueta, ":");
+                apilarPolaca(Etiqueta); }
+    P_A condicion P_C L_A sentencias L_C    {   printf("\niteracion: WHILE P_A condicion P_C L_A sentencias\n");
+                                                desapilarEtiquetaW(); 
+                                                apilarPolaca(EtiqDesaW);
+                                                apilarPolaca("JMP");
+                                                desapilarEtiqueta();
+                                                if(auxBool==0){
+                                                    printf("PASOOOO 1 \n\n");
+                                                    strcat(EtiqDesa,":");
+                                                    apilarPolaca(EtiqDesa);
                                                 }
-    
+                                                else{
+                                                    printf("PASOOOO 2 \n\n");
+                                                    strcat(auxInlistwhile,":");
+                                                    apilarPolaca(auxInlistwhile);
+                                                    strcpy(auxInlistwhile, "");
+                                                    auxBool=0;
+                                                }   }    
     ;
+
 asignacion: 
-    ID ASIG expresion              {    
-                                        printf("asignacion: ID ASIG expresion\n");
-                                        auxSymbol = getSymbol($1);
-                                        validarTipos(auxSymbol.tipo);
-                                        auxSymbol = nullSymbol;
-                                        apilarPolaca($1);
-                                        apilarPolaca("=");
+    ID ASIG expresion           {   printf("asignacion: ID ASIG expresion\n");
+                                    auxSymbol = getSymbol($1);
+                                    validarTipos(auxSymbol.tipo);
+                                    auxSymbol = nullSymbol;
+                                    apilarPolaca($1);
+                                    apilarPolaca("=");  }
+    | ID ASIG concatenacion     {   printf("asignacion: ID ASIG concatenacion\n");
+                                    auxSymbol = getSymbol($1);
+                                    if(strcmp(auxSymbol.tipo,"string")!=0){ 
+                                        auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
                                     }
-    | ID ASIG concatenacion          {  printf("asignacion: ID ASIG concatenacion\n");
-                                        auxSymbol = getSymbol($1);
-                                        if(strcmp(auxSymbol.tipo,"string")!=0 ){ auxSymbol = nullSymbol; yyerror("Tipos incompatibles");}
-                                        //validarTipos("string");
-                                        printf("Aca hay que validar asignacion: ID ASIG concatenacion \n");
-                                        validarTipos("string");
-                                        apilarPolaca($1);
-                                        apilarPolaca("=");
-                                    }
+                                    //validarTipos("string");
+                                    printf("Aca hay que validar asignacion: ID ASIG concatenacion \n");
+                                    validarTipos("string");
+                                    apilarPolaca($1);
+                                    apilarPolaca("=");  }
     ;
+    
 concatenacion: 
     ID OP_CONCAT ID                  {  auxSymbol = getSymbol($1);
-                                        if(strcmp(auxSymbol.tipo,"string")!=0 ){ auxSymbol = nullSymbol; yyerror("Tipos incompatibles");}
+                                        if(strcmp(auxSymbol.tipo,"string")!=0){ 
+                                            auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
+                                        }
                                         auxSymbol = getSymbol($3);
-                                        if(strcmp(auxSymbol.tipo,"string")!=0 ){ auxSymbol = nullSymbol; yyerror("Tipos incompatibles");}
+                                        if(strcmp(auxSymbol.tipo,"string")!=0){
+                                            auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
+                                        }
                                         validarTipos("string");
                                         printf("acá hay que validar concatenacion: ID OP_CONCAT ID");
                                         apilarPolaca($1);
                                         apilarPolaca($3);
-                                        apilarPolaca("++");
-                                       }
-    | ID OP_CONCAT constanteString     {auxSymbol = getSymbol($1);
-                                        if(strcmp(auxSymbol.tipo,"string")!=0 ){ auxSymbol = nullSymbol; yyerror("Tipos incompatibles");}
+                                        apilarPolaca("++"); }
+    | ID OP_CONCAT constanteString  {   auxSymbol = getSymbol($1);
+                                        if(strcmp(auxSymbol.tipo,"string")!=0){
+                                            auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
+                                        }
                                         printf("acá hay que validar concatenacion: ID OP_CONCAT constanteString");
                                         trampearPolaca($1);
                                         validarTipos("string");
-                                        apilarPolaca("++");
-                                       }
-    | constanteString OP_CONCAT ID     {auxSymbol = getSymbol($3);
-                                        if(strcmp(auxSymbol.tipo,"string")!=0 ){ auxSymbol = nullSymbol; yyerror("Tipos incompatibles");}
+                                        apilarPolaca("++"); }
+    | constanteString OP_CONCAT ID  {   auxSymbol = getSymbol($3);
+                                        if(strcmp(auxSymbol.tipo,"string")!=0){
+                                            auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
+                                        }
                                         printf("acá hay que validar concatenacion: constanteString OP_CONCAT ID");
                                         validarTipos("string");
                                         apilarPolaca($3);
-                                        apilarPolaca("++");
-                                        }
-    | constanteString OP_CONCAT constanteString {validarTipos("string");apilarPolaca("++");}
-    | constanteString                   {/*validarTipos("string");*/;}
-
+                                        apilarPolaca("++"); }
+    | constanteString OP_CONCAT constanteString {   validarTipos("string");
+                                                    apilarPolaca("++");     }
+    | constanteString                   {   /*validarTipos("string");*/;    }
     ;
+
 condicion: 
-    expresion CMP_MAY expresion    {printf("condicion  : expresion CMP_MAY expresion \n");
+    expresion CMP_MAY expresion     {   printf("condicion  : expresion CMP_MAY expresion \n");
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
-                                        apilarPolaca("JNB");
-                                    }
-    | expresion CMP_MEN expresion    {printf("condicion  | expresion CMP_MEN expresion \n");
+                                        apilarPolaca("JNB");    }
+    | expresion CMP_MEN expresion   {   printf("condicion  | expresion CMP_MEN expresion \n");
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
-                                        apilarPolaca("JNA");
-                                        }
-    | expresion CMP_MAYI expresion   {printf("condicion:  \n");
+                                        apilarPolaca("JNA");    }
+    | expresion CMP_MAYI expresion   {  printf("condicion:  \n");
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
-                                        apilarPolaca("JNBE");
-                                    }
-    | expresion CMP_MENI expresion   {printf("condicion: CMP_MENI expresion   \n");
+                                        apilarPolaca("JNBE");   }
+    | expresion CMP_MENI expresion  {   printf("condicion: CMP_MENI expresion   \n");
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
-                                        apilarPolaca("JNAE");
-                                    }
-    | expresion CMP_DIST expresion   {printf("condicion: CMP_DIST expresion   \n");
+                                        apilarPolaca("JNAE");   }
+    | expresion CMP_DIST expresion  {   printf("condicion: CMP_DIST expresion   \n");
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
-                                        apilarPolaca("JE");
-                                    }
-    | expresion CMP_IGUAL expresion  {printf("condicion: CMP_IGUAL expresion  \n");
+                                        apilarPolaca("JE"); }
+    | expresion CMP_IGUAL expresion {   printf("condicion: CMP_IGUAL expresion  \n");
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta); 
-                                        apilarPolaca("JNZ");
-                                    }
+                                        apilarPolaca("JNZ");    }
     | INLIST P_A ID                 {   //printf("CONDICION: INLIST \n");
                                         //generarEtiqueta();
                                         //printf("ETIQUETA DEL if con INLIST=  %s \n\n\n",Etiqueta);
@@ -482,115 +462,132 @@ condicion:
                                         apilarPolaca("0"); 
                                         apilarPolaca("=");
                                         strcpy(auxInlist,$3);
-                                        apilarPolaca(auxInlist);
-
-                                    }PUNTO_Y_COMA C_A contenido_inlist C_C P_C{
-                                                                                auxBool=1; 
-                                                                                 //printf("inlist: INLIST P_A ID PUNTO_Y_COMA C_A contenido_inlist C_C P_C\n");
-                                                                                 apilarPolaca("_aux");
-                                                                                 apilarPolaca("1");
-                                                                                 apilarPolaca("CMP");
-                                                                                 generarEtiqueta();
-                                                                                 printf("ETIQUETA if de INLIST=  %s \n\n\n",Etiqueta);
-                                                                                 apilarPolaca(Etiqueta);
-                                                                                 apilarPolaca("JNZ");
-                                                                                 strcpy(auxInlistwhile,Etiqueta);
-                                                                                 //desapilarEtiqueta();
-                                                                                 //strcat(Etiqueta,":");
-                                                                                 //printf("DESAPILAR ETIQUETA 1=  %s \n",Etiqueta);
-                                                                                 //apilarPolaca(Etiqueta); 
-                                                                                }
-    ;
-
-
-contenido_inlist: 
-    expresion  			{   //printf("contenido_inlist: expresion\n");
-                            apilarPolaca("CMP");
-                            generarEtiqueta();
-                            printf("ETIQUETA 1=  %s \n",Etiqueta);
-                            apilarPolaca(Etiqueta);
-                            apilarPolaca("JNZ");
-                            apilarPolaca("_aux"); 
-                            apilarPolaca("1"); 
-                            apilarPolaca("=");  
-                            desapilarEtiqueta();
-                            strcat(Etiqueta,":");
-                            printf("DESAPILAR ETIQUETA 1=  %s \n",Etiqueta);
-                            apilarPolaca(Etiqueta);         
-                        }
-
-	| contenido_inlist  PUNTO_Y_COMA  {apilarPolaca(auxInlist);} expresion
-                                                {  
-                                                    //printf("contenido_inlist: contenido_inlist PUNTO_Y_COMA expresion\n");
-                                                    apilarPolaca("CMP"); 
+                                        apilarPolaca(auxInlist);    }
+    PUNTO_Y_COMA C_A contenido_inlist C_C P_C   {   auxBool=1; 
+                                                    //printf("inlist: INLIST P_A ID PUNTO_Y_COMA C_A contenido_inlist C_C P_C\n");
+                                                    apilarPolaca("_aux");
+                                                    apilarPolaca("1");
+                                                    apilarPolaca("CMP");
                                                     generarEtiqueta();
-                                                    printf("ETIQUETA 1=  %s \n",Etiqueta);
+                                                    printf("ETIQUETA if de INLIST=  %s \n\n\n",Etiqueta);
                                                     apilarPolaca(Etiqueta);
                                                     apilarPolaca("JNZ");
-                                                    apilarPolaca("_aux"); 
-                                                    apilarPolaca("1"); 
-                                                    apilarPolaca("=");
-                                                    desapilarEtiqueta();
-                                                    strcat(Etiqueta,":");
-                                                    printf("DESAPILAR ETIQUETA 1=  %s \n",Etiqueta);
-                                                    apilarPolaca(Etiqueta);                                                                                                                                                                                                                  
-                                                }
-    ; 
+                                                    strcpy(auxInlistwhile,Etiqueta);   }
+    ;
+
+contenido_inlist: 
+    expresion   {   //printf("contenido_inlist: expresion\n");
+                    apilarPolaca("CMP");
+                    generarEtiqueta();
+                    printf("ETIQUETA 1=  %s \n",Etiqueta);
+                    apilarPolaca(Etiqueta);
+                    apilarPolaca("JNZ");
+                    apilarPolaca("_aux"); 
+                    apilarPolaca("1"); 
+                    apilarPolaca("=");  
+                    desapilarEtiqueta();
+                    strcat(Etiqueta,":");
+                    printf("DESAPILAR ETIQUETA 1=  %s \n",Etiqueta);
+                    apilarPolaca(Etiqueta); }
+
+	| contenido_inlist  PUNTO_Y_COMA    {   apilarPolaca(auxInlist);    }
+        expresion   {   //printf("contenido_inlist: contenido_inlist PUNTO_Y_COMA expresion\n");
+                        apilarPolaca("CMP"); 
+                        generarEtiqueta();
+                        printf("ETIQUETA 1=  %s \n",Etiqueta);
+                        apilarPolaca(Etiqueta);
+                        apilarPolaca("JNZ");
+                        apilarPolaca("_aux"); 
+                        apilarPolaca("1"); 
+                        apilarPolaca("=");
+                        desapilarEtiqueta();
+                        strcat(Etiqueta,":");
+                        printf("DESAPILAR ETIQUETA 1=  %s \n",Etiqueta);
+                        apilarPolaca(Etiqueta); }
+    ;
     
 expresion:
-    expresion OP_SUM termino          {printf("expresion: expresion OP_SUM termino \n"); validarTipos("float");apilarPolaca("+");}
-    | expresion OP_RES termino       {printf("expresion: expresion OP_RES termino\n"); validarTipos("float");apilarPolaca("-");}
-    | termino                        {printf("expresion: termino  \n");}
+    expresion OP_SUM termino        {   printf("expresion: expresion OP_SUM termino \n"); 
+                                        validarTipos("float");
+                                        apilarPolaca("+");  }
+    | expresion OP_RES termino      {   printf("expresion: expresion OP_RES termino\n"); 
+                                        validarTipos("float");
+                                        apilarPolaca("-");  }
+    | termino                       {   printf("expresion: termino  \n");   }
     ;
+
 termino: 
-    termino OP_MUL factor            {printf("termino: termino OP_MUL factor \n"); validarTipos("float") ;apilarPolaca("*");}
-    | termino OP_DIV factor          {printf("termino: termino OP_DIV factor \n"); validarTipos("float");apilarPolaca("/");}
-    | termino DIV factor             {printf("termino: termino DIV factor \n"); validarTipos("float");apilarPolaca("DIV");}
-    | termino MOD factor             {printf("termino: termino MOD factor \n"); validarTipos("float");apilarPolaca("MOD");}
-    | factor                         {printf("termino: factor \n");}
+    termino OP_MUL factor       {   printf("termino: termino OP_MUL factor \n"); 
+                                    validarTipos("float");
+                                    apilarPolaca("*");  }
+    | termino OP_DIV factor     {   printf("termino: termino OP_DIV factor \n"); 
+                                    validarTipos("float");
+                                    apilarPolaca("/");  }
+    | termino DIV factor        {   printf("termino: termino DIV factor \n"); 
+                                    validarTipos("float");
+                                    apilarPolaca("DIV");    }
+    | termino MOD factor        {   printf("termino: termino MOD factor \n"); 
+                                    validarTipos("float");
+                                    apilarPolaca("MOD");    }
+    | factor                    {   printf("termino: factor \n");   }
     ;
+
 factor: 
-    P_A expresion P_C              {printf("factor: P_A expresion P_C  \n");}
-    | ID                           {printf("factor: ID (insertando tipo) \n");
-                                        auxSymbol=getSymbol($1);
-                                        insertarTipo(auxSymbol.tipo);
-                                        printf("Tipo insertado de ID=  %s \n",auxSymbol.tipo);
-                                        apilarPolaca($1);
-                                    }
+    P_A expresion P_C           {   printf("factor: P_A expresion P_C  \n");    }
+    | ID                        {   printf("factor: ID (insertando tipo) \n");
+                                    auxSymbol=getSymbol($1);
+                                    insertarTipo(auxSymbol.tipo);
+                                    printf("Tipo insertado de ID=  %s \n",auxSymbol.tipo);
+                                    apilarPolaca($1);   }
     | constanteNumerica
-    | avg                         { printf("factor: avg \n");
+    | avg                       {   printf("factor: avg \n");
                                     sprintf(stringAVG, "%d", contAVG); // replaced itoa(contAVG, stringAVG, 10) for this.
                                     apilarPolaca(stringAVG);
-                                    apilarPolaca("/");}
+                                    apilarPolaca("/");  }
     ;
+
 avg: 
-    AVG P_A C_A contenido_avg C_C P_C {printf("avg : AVG P_A C_A contenido_avg C_C P_C \n");}
+    AVG P_A C_A contenido_avg C_C P_C   {   printf("avg : AVG P_A C_A contenido_avg C_C P_C \n");   }
 	;
+
 contenido_avg: 
-    expresion    					{printf("contenido_avg: expresion ---> Cont:=1 \n "); }
-	| contenido_avg COMA expresion  {contAVG++; printf("contenido_avg: contenido_avg COMA expresion %d \n", contAVG); apilarPolaca("+"); }
+    expresion    					{   printf("contenido_avg: expresion ---> Cont:=1 \n ");    }
+	| contenido_avg COMA expresion  {   contAVG++; 
+                                        printf("contenido_avg: contenido_avg COMA expresion %d \n", contAVG); 
+                                        apilarPolaca("+");  }
     ;
+
 constanteNumerica: 
-    ENTERO                 {validarInt(yylval.s) ;printf("constante: ENTERO: %s\n" , yylval.s); apilarPolaca(yylval.s); }
-    | REAL                 {validarFloat(yylval.s);printf("constante: REAL: %s  \n" , yylval.s); apilarPolaca(yylval.s);}
-    | BOOLEANO             {validarBooleano(yylval.s);printf("constante: BOOLEANO: %s\n" , yylval.s); apilarPolaca(yylval.s);}
+    ENTERO              {   validarInt(yylval.s);
+                            printf("constante ENTERO: %s\n", yylval.s);
+                            apilarPolaca(yylval.s); }
+    | REAL              {   validarFloat(yylval.s);
+                            printf("constante REAL: %s\n" , yylval.s);
+                            apilarPolaca(yylval.s); }
+    | BOOLEANO          {   validarBooleano(yylval.s);
+                            printf("constante BOOLEANO: %s\n" , yylval.s); 
+                            apilarPolaca(yylval.s); }
     ;
 constanteString: 
-    STRING_CONST           {validarString(yylval.s);printf("constante: STRING %s\n" , yylval.s);}
+    STRING_CONST        {   validarString(yylval.s);
+                            printf("constante STRING %s\n" , yylval.s);    }
     ;
 
 escritura:
-    WRITE expresion PUNTO_Y_COMA        {printf("escritura: WRITE expresion PUNTO_Y_COMA "); apilarPolaca("WRITE");resetTipos();}
-    | WRITE concatenacion PUNTO_Y_COMA  {printf("escritura: WRITE concatenacion PUNTO_Y_COMA "); apilarPolaca("WRITE");resetTipos();}
+    WRITE expresion PUNTO_Y_COMA        {   printf("escritura: WRITE expresion PUNTO_Y_COMA");
+                                            apilarPolaca("WRITE");
+                                            resetTipos();   }
+    | WRITE concatenacion PUNTO_Y_COMA  {   printf("escritura: WRITE concatenacion PUNTO_Y_COMA");
+                                            apilarPolaca("WRITE");
+                                            resetTipos();   }
     ;
+
 lectura:
-    READ ID PUNTO_Y_COMA        {printf("lectura: READ ID PUNTO_Y_COMA "); apilarPolaca("READ"); /*resetTipos();*/}
+    READ ID PUNTO_Y_COMA    {   printf("lectura: READ ID PUNTO_Y_COMA"); 
+                                apilarPolaca("READ");   }
     ;
 
 %%
-
-
-// //auxSymbol = getSymbol($1); if(strcmp(auxSymbol.tipo,"float")!=0 ){ auxSymbol = nullSymbol; yyerror("Tipos incompatibles");} ;printf("factor : ID: %s\n", yylval.s);}
 
 /* funciones para validacion */
 
@@ -995,18 +992,16 @@ void desapilarEtiquetaW(){
 
 /* fin de funciones para polaca */
 
-
-
-
-
-int main(int argc,char *argv[]){
+int main(int argc,  char *argv[]){
+    printf("\n1: Arranca la compilacion");
     if ((ArchivoPolaca = fopen("intermedia.txt", "wt")) == NULL) {
         fprintf(stderr,"\nNo se puede abrir el archivo: %s\n", "intermedia.txt");
         exit(1);
     }
-    strcpy(nullSymbol.nombre,"!");//inicializando simbolo nulo
+    strcpy(nullSymbol.nombre,"!");  // inicializando simbolo nulo
+    printf("\n2: Arranca la compilacion");
     yyparse();
-    //fclose(ArchivoPolaca);
+    // fclose(ArchivoPolaca);
     return 0;
 }
 
