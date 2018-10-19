@@ -28,16 +28,10 @@ char auxInlistwhile[25]; // usamos para cerrar el while con la funcion INLIST co
 char auxInlist[25];
 int auxBool=0;
 
-
-
-
 char cteStrSinBlancos[50];
 void reemplazarBlancos(char *cad);
 
-
-
 /* funciones para polaca etc */
-
 int contEtiqueta = 0;   //para generar etiq unicas
 char Etiqueta[10];      //para generar etiq unicas
 char EtiqDesa[10];
@@ -52,8 +46,8 @@ char buffer[20];
 char pilaPolaca[500][50];
 int pilaWhile[150];
 int topePilaWhile = 0;
-void apilarWhile(int pos);
 
+void apilarWhile(int pos);
 int desapilarWhile();
 
 void apilarPolaca(char *);
@@ -65,13 +59,9 @@ void desapilarEtiqueta();
 void apilarEtiquetaW(char *strEtiq);
 void desapilarEtiquetaW();
 void grabarPolaca();
-
 /* fin de funciones para polaca etc */
 
-
-
 /*funciones y estructuras para handle de tipos */
-
 char tipos[20][40];
 int contTipos = 0;
 
@@ -79,12 +69,10 @@ int insertarTipo(char tipo[]);
 int resetTipos();
 int compararTipos(char *a, char *b);
 int validarTipos(char tipo[]) ;
-
 /*fin de funciones y estructuras para handle de tipos */
 
 
 /* funciones tabla de simbolos */
-
 typedef struct symbol {
     char nombre[50];
     char tipo[10];
@@ -93,7 +81,6 @@ typedef struct symbol {
     int limite;
 } symbol;
 
-
 symbol nullSymbol;
 symbol symbolTable[1000];
 int pos_st = 0;
@@ -101,15 +88,12 @@ int pos_st = 0;
 // symbolo auxiliar
 symbol auxSymbol;
 symbol auxSymbol2;
-
-
 // el valor ! representa al simbolo nulo.
 
 
 void writeTupla(FILE *p ,int filas,symbol symbolTable[]){
     int j;
     for(j=0; j < filas; j++ ){
-        
         fprintf(p,"%-25s",symbolTable[j].nombre);
         fprintf(p,"|%-25s",symbolTable[j].tipo);
         fprintf(p,"|%-25s",symbolTable[j].valor);
@@ -117,16 +101,9 @@ void writeTupla(FILE *p ,int filas,symbol symbolTable[]){
         fprintf(p,"|%-25d",symbolTable[j].limite);
         fprintf(p, "\n");
     }
-
-//fprintf(tos,"%-35s|%-20s|%-35s|%-5d\n", TS[i].nombre, tipo, TS[i].valor, TS[i].longitud);
-
-
-
 }
 
-void writeTable(FILE *p,  int filas, symbol symbolTable[], void (*tupla)(FILE *p ,int filas, symbol symbolTable[])){
-    
-    
+void writeTable(FILE *p,  int filas, symbol symbolTable[], void (*tupla)(FILE *p ,int filas, symbol symbolTable[])){   
     char titulos[5][20] = {"Nombre","Tipo","Valor","Longitud","Limite"};
     int j;
     for(j=0; j < 5; j++ ){
@@ -136,33 +113,20 @@ void writeTable(FILE *p,  int filas, symbol symbolTable[], void (*tupla)(FILE *p
             fprintf(p,"|%-25s",titulos[j]);
     }
     fprintf(p, "\n");
-
     int i;
-
-        tupla(p,filas,symbolTable);
-
-
+    tupla(p,filas,symbolTable);
     fprintf(p,"\n");
 }
 
-
-
-
 //Estructura de la SymbolTable
-
-void CrearSymbolTable(symbol symbolTable[],char * ruta)
-{
-//Declaracion de variables
-
-//Definicion del archivo de salida y su cabecera
-FILE  *p = fopen(ruta, "w");
-
-writeTable(p,pos_st  , symbolTable,writeTupla);
-
-//Fin
-fclose(p);
+void CrearSymbolTable(symbol symbolTable[],char * ruta){
+    //Declaracion de variables
+    //Definicion del archivo de salida y su cabecera
+    FILE  *p = fopen(ruta, "w");
+    writeTable(p,pos_st  , symbolTable,writeTupla);
+    //Fin
+    fclose(p);
 }
-
 
 // helpers
 char *downcase(char *p);
@@ -174,11 +138,6 @@ void symbolTableToExcel(symbol table[],char * ruta);
 /* fin de funciones tabla de simbolos */
 
 /* funciones para validacion (cabeceras)*/
-
-
-
-
-
 /* funciones para validar el rango*/
 int validarInt(char entero[]);
 int validarFloat(char flotante[]);
@@ -190,12 +149,9 @@ int longListaTipos = 0;//estas variables se usan para ver el balanceo del defvar
                      // se van a ir sumando y cuando se ejecuta la regla lv : lt
                      // compara que haya la misma cantidad de los dos lados
 int verificarBalanceo();
-
-
 /* fin de funciones para validacion */
 
 /* funciones para que el bloque DecVar cargue la tabla de símbolos */
-
 char varTypeArray[2][100][50];
 int idPos = 0;
 int typePos = 0;
@@ -203,18 +159,13 @@ int typePos = 0;
 void collectId (char *id);
 void collectType (char *type);
 void consolidateIdType();
-
 /* fin de funciones para que el bloque DecVar cargue la tabla de símbolos */
-
-
-
 
 %}
 
 %union{
  char s[20];
 }
-
 
 %token IF ELSE WHILE DEFVAR ENDDEF WRITE READ AVG INLIST
 %token REAL BINA ENTERO BOOLEANO STRING_CONST
@@ -225,7 +176,6 @@ void consolidateIdType();
 %token CMP_MAY CMP_MEN CMP_MAYI CMP_MENI CMP_DIST CMP_IGUAL
 %token ASIG
 %type <s> expresion
-
 
 %%
 raiz: programa {    printf("Compila OK \n"); 
@@ -266,7 +216,8 @@ lista_variables:
                                 collectId(yylval.s);
                                 printf("\nlista_variables: lista_variables COMA ID: %s\n", yylval.s);   }
     | ID    {   longListaId++;
-                collectId(yylval.s); printf("lista_variables: ID: %s\n", yylval.s); }
+                collectId(yylval.s);
+                printf("lista_variables: ID: %s\n", yylval.s); }
     ;
 
 tipo_dato: 
@@ -590,36 +541,30 @@ lectura:
 %%
 
 /* funciones para validacion */
-
 int validarBooleano( char Booleano[]) {
- 		
- 		char msg[100];
-		if (strcmp(Booleano, "true")!= 0 && strcmp(Booleano, "false")!=0)
-		{
-		    sprintf(msg, "ERROR: %s no es un tipo booleano\n" , Booleano);
-            yyerror(msg);
-            return 1;
-		}
-		else
-		//guardarenTS
-		{
-		//	printf("Booleano ok! %s \n", Booleano);
-		    saveSymbol(Booleano,"cBool", NULL);
-        	insertarTipo("cBool");
-			return 0;
-		}		
+ 	char msg[100];
+	if (strcmp(Booleano, "true")!= 0 && strcmp(Booleano, "false")!=0){
+	    sprintf(msg, "ERROR: %s no es un tipo booleano\n" , Booleano);
+        yyerror(msg);
+        return 1;
+	}
+	else{
+	//	printf("Booleano ok! %s \n", Booleano);
+	    saveSymbol(Booleano,"cBool", NULL);
+    	insertarTipo("cBool");
+		return 0;
+	}		
 }
 
-
-
-int validarInt(char entero[]) {
+int validarInt(char entero[]){
     int casteado = atoi(entero);
     char msg[100];
     if(casteado < -32768 || casteado > 32767) {
         sprintf(msg, "ERROR: Entero %d fuera de rango. Debe estar entre [-32768; 32767]\n", casteado);
         yyerror(msg);
         return 1;
-    } else {
+    }
+    else{
         //guardarenTS
         saveSymbol(entero,"cInt", NULL);
         insertarTipo("cInt");
@@ -628,7 +573,6 @@ int validarInt(char entero[]) {
         //printf("Entero ok! %d \n", casteado);
         return 0;
     }
-
 }
 
 int validarFloat(char flotante[]) {
@@ -640,7 +584,8 @@ int validarFloat(char flotante[]) {
         sprintf(msg, "ERROR: Float %f fuera de rango. Debe estar entre [1.17549e-38; 3.40282e38]\n", casteado);
         yyerror(msg);
         return 1;
-    } else {
+    }
+    else{
         saveSymbol(flotante,"cFloat", NULL);
         insertarTipo("cFloat");
         // guardarenTS
@@ -648,15 +593,11 @@ int validarFloat(char flotante[]) {
         // printf("Float ok! %f \n", casteado);
         return 0;
     }
-
 }
-
-
 
 int validarString(char cadena[]) {
     char msg[100];
     int longitud = strlen(cadena);
-
     if( strlen(cadena) > 32){ //en lugar de 30 verifica con 32 porque el string viene entre comillas
         sprintf(msg, "ERROR: Cadena %s demasiado larga. Maximo 30 caracteres\n", cadena);
         yyerror(msg);
@@ -672,17 +613,6 @@ int validarString(char cadena[]) {
     insertarTipo("string");
     reemplazarBlancos(sincomillas);
     apilarPolaca(sincomillas);
-/*
-    // Bloque para debug
-    printf("***************************\n");
-    printf("%d\n",strlen(sincomillas));
-    for ( i = 0; i < strlen(sincomillas)+1; i++) {
-        printf("%d : %c , %d \n",i,sincomillas[i],sincomillas[i]);
-    }
-    printf("***************************\n");
-*/
-
-    //guardarenTS;
     return 0;
 }
 
@@ -693,21 +623,16 @@ int verificarBalanceo(){
     longListaTipos = longListaId = 0;
     return 0;
 }
-
-
-
 /* fin de funciones para validacion */
 
 
 /* funciones para que el bloque DecVar cargue la tabla de símbolos */
-
 void collectId (char *id) {
-    strcpy(varTypeArray[0][idPos++],id);
+    strcpy(varTypeArray[0][idPos++], id);
 }
 
 void collectType (char *type){
-    strcpy(varTypeArray[1][typePos++],type);
-
+    strcpy(varTypeArray[1][typePos++], type);
 }
 
 void consolidateIdType() {
@@ -719,7 +644,6 @@ void consolidateIdType() {
     idPos=0;
     typePos=0;
 }
-
 /* fin de funciones para que el bloque DecVar cargue la tabla de símbolos */
 
 /* funciones tabla de simbolos */
@@ -741,7 +665,6 @@ char *prefix_(char *p){
     return p+1;
 }
 
-
 int searchSymbol(char key[]){
     static int llamada=0;
     llamada++;
@@ -750,11 +673,10 @@ int searchSymbol(char key[]){
     prefix_(downcase(mynombre));
     int i;
     for ( i = 0;  i < pos_st ; i++) {
-        if(strcmp(symbolTable[i].nombre, mynombre ) == 0){
+        if(strcmp(symbolTable[i].nombre, mynombre) == 0){
             return i;
         }
     }
-
     return -1;
 }
 
@@ -774,10 +696,10 @@ int saveSymbol(char nombre[], char tipo[], char valor[] ){
     strcpy(newSymbol.tipo, type);
     if (valor == NULL){
         strcpy(newSymbol.valor, nombre);
-    } else {
+    }
+    else{
         strcpy(newSymbol.valor, valor);
     }
-
     newSymbol.longitud = strlen(nombre);
     symbolTable[use_pos] = newSymbol;
     newSymbol = nullSymbol;
@@ -790,28 +712,21 @@ symbol getSymbol(char nombre[]){
     return nullSymbol;
 }
 
-void symbolTableToExcel(symbol table[],char * ruta)
-{
-//Declaracion de variables
-int i;
-//Definicion del archivo de salida y su cabecera
-FILE  *ptr = fopen(ruta, "w");
-fprintf (ptr,"nombre,tipo,valor,longitud,limite\n");
-//Recorrido de la symbol table, corta con el caracter @
-//while(strncmp(table[i].nombre,"@",1)!=0)
-for(i=0;i < pos_st ;i++) {
-    fprintf(ptr, "%s,%s,%s,%d,%d\n",table[i].nombre,table[i].tipo,table[i].valor,table[i].longitud,table[i].limite);
+void symbolTableToExcel(symbol table[],char * ruta){
+    //Declaracion de variables
+    int i;
+    //Definicion del archivo de salida y su cabecera
+    FILE  *ptr = fopen(ruta, "w");
+    fprintf(ptr,"nombre,tipo,valor,longitud,limite\n");
+    for(i=0;i < pos_st ;i++) {
+        fprintf(ptr, "%s,%s,%s,%d,%d\n",table[i].nombre,table[i].tipo,table[i].valor,table[i].longitud,table[i].limite);
+    }
+    //Fin
+    fclose(ptr);
 }
-//Fin
-fclose(ptr);
-}
-
-
-
 /* fin de funciones tabla de simbolos */
 
 /*funciones  para handle de tipos */
-
 int insertarTipo(char tipo[]) {
     strcpy(tipos[contTipos],tipo);
     strcpy(tipos[contTipos+1],"null");
@@ -835,28 +750,26 @@ int compararTipos(char *a, char *b){
     printf("Comparando %s y %s\n",auxa,auxb);
     
     // sino se declaro alguna variable asigno null a tipo
-    if ( !strcmp(auxa, ""))
+    if (!strcmp(auxa, ""))
      strcpy(auxa,"null");
     
-    if ( !strcmp(auxb, ""))
+    if (!strcmp(auxb, ""))
      strcpy(auxb,"null");
     
     // Si se agrego algun null salgo
-    if ( !strcmp(auxa, "null") || !strcmp(auxb, "null") ){
+    if(!strcmp(auxa, "null") || !strcmp(auxb, "null") ){
       //     printf("Son iguales\n");
            return 2;
     }
-
     // si  le asigno a un float un int lo deja pasar
     if ( !strcmp(auxa, "float") && !strcmp(auxb, "cint") ){
         //   printf("Son iguales\n");
            return 0;
     }
-    if ( !strcmp(auxa, "float") && !strcmp(auxb, "int") ){
+    if(!strcmp(auxa, "float") && !strcmp(auxb, "int") ){
        //    printf("Son iguales\n");
            return 0;
     }
-  
     if (strstr(auxa,auxb) != NULL){
         return 0;
     }
@@ -866,15 +779,9 @@ int compararTipos(char *a, char *b){
     return 1;
 }
 
-
-
 int validarTipos(char tipo[]) {
     char msg[100];
-    int i ;
-
-    //if ( strcmp(tipo, "cInt"))
-    
-
+    int i;
     for(i=0; i< contTipos; i++){
         if(compararTipos(tipo,tipos[i])==2){
             sprintf(msg, "Variable no declarada\n");
@@ -887,19 +794,8 @@ int validarTipos(char tipo[]) {
     }
     resetTipos();
     return 0;
-
 }
-
-
-
-
 /*fin de funciones  para handle de tipos */
-
-
-/* funciones para polaca */
-
-
-
 
 /***************************************************
 funcion que genera la polaca en el archivo intermedia.txt
@@ -918,7 +814,6 @@ void trampearPolaca(char *strToken){
     posPolaca++;
 }
 
-
 void insertarPolaca(char *strToken, int pos){
     strcpy(pilaPolaca[pos],strToken);
 }
@@ -931,21 +826,15 @@ void grabarPolaca(){
     fclose(ArchivoPolaca);
 }
 
-
 /***************************************************
 funcion que genera etiquetas unicas
 ***************************************************/
 void generarEtiqueta(){
-     char string[25];
-
+    char string[25];
   	strcpy(Etiqueta,"@@etiq");
-
 	contEtiqueta = contEtiqueta + 1;
-    
     sprintf(string, "%d", contEtiqueta); // replaced itoa(contEtiqueta, string, 10)  for this.
-
     strcat(Etiqueta, string);
-    
 }
 
 /***************************************************
@@ -960,7 +849,6 @@ void apilarEtiquetaW(char *strEtiq){
     strcpy(pilaEtiquetasW[topeEtiquetasW],strEtiq);
     topeEtiquetasW++;
 }
-
 
 void apilarWhile(int pos){
     pilaWhile[topePilaWhile]=pos;
@@ -988,18 +876,14 @@ void desapilarEtiquetaW(){
     strcpy(EtiqDesaW,pilaEtiquetasW[topeEtiquetasW]);
 	strcpy(pilaEtiquetasW[topeEtiquetasW],"");
 }
-
-
 /* fin de funciones para polaca */
 
 int main(int argc,  char *argv[]){
-    printf("\n1: Arranca la compilacion");
     if ((ArchivoPolaca = fopen("intermedia.txt", "wt")) == NULL) {
         fprintf(stderr,"\nNo se puede abrir el archivo: %s\n", "intermedia.txt");
         exit(1);
     }
-    strcpy(nullSymbol.nombre,"!");  // inicializando simbolo nulo
-    printf("\n2: Arranca la compilacion");
+    strcpy(nullSymbol.nombre, "!");  // inicializando simbolo nulo
     yyparse();
     // fclose(ArchivoPolaca);
     return 0;
@@ -1015,22 +899,14 @@ void yyerror(char *msg){
 void reemplazarBlancos(char *cad){
 	int i,num;
 	char aux[50];
-
 	for(i=0; i < strlen(cad); i++){
-
-		if( (cad[i]=='_')|| cad[i]=='\0' || cad[i]=='\n' || (cad[i]>='0' &&cad[i]<='9') || (cad[i]>='a' && cad[i]<= 'z')|| (cad[i]>= 'A' &&cad[i]<='Z') ) {
+		if((cad[i]=='_') || cad[i]=='\0' || cad[i]=='\n' || (cad[i]>='0' &&cad[i]<='9') || (cad[i]>='a' && cad[i]<= 'z')|| (cad[i]>= 'A' &&cad[i]<='Z')){
 			cteStrSinBlancos[i]=cad[i];
         }
 		else{
 		    cteStrSinBlancos[i]='_';
         }
 	}
-
 	cteStrSinBlancos[i--]='\0';
-
 	strcpy(cad,cteStrSinBlancos);
-
 }
-
-
-
