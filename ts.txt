@@ -1,5 +1,5 @@
 Nombre                   |Tipo                     |Valor                    |Longitud                 |Limite                   
-_a1                      |float                    |a1                       |2                        |32766                    
+_a1                      |float                    |a1                       |2                        |-1                       
 _a2                      |                         |a2                       |2                        |0                        
 _a3                      |                         |a3                       |2                        |0                        
 _b                       |int                      |b                        |1                        |0                        
