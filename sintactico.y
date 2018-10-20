@@ -293,6 +293,22 @@ decision:
                                                 desapilarEtiqueta();
                                                 //strcat(EtiqDesa,":");
                                                 apilarPolaca(EtiqDesa); }
+    | IF P_A condicion P_C L_A  L_C         {   fprintf(stdout,"\nFin del then");
+                                                fflush(stdout);
+                                                generarEtiqueta();//fin
+                                                apilarPolaca(Etiqueta);//fin
+                                                apilarPolaca("JMP");
+                                                desapilarEtiqueta();
+                                                strcat(EtiqDesa,":");
+                                                apilarPolaca(EtiqDesa);
+                                                apilarEtiqueta(Etiqueta);   }
+    ELSE                                    {   fprintf(stdout,"\nelse");
+                                                fflush(stdout); }
+    L_A sentencias L_C                      {   fprintf(stdout,"\nfin del else");
+                                                fflush(stdout);
+                                                desapilarEtiqueta();
+                                                strcat(EtiqDesa,":");                                           
+                                                apilarPolaca(EtiqDesa); }
    ;
 
 iteracion: 
