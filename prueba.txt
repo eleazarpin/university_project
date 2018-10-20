@@ -1,5 +1,55 @@
 DEFVAR
 
-a : float
+a1,a2,a3 : float
+b : int
+c1,c2 : INT
+d1 : float
+y : bool
+
+pri : string
+seg : string
 
 ENDDEF
+
+a1 := 0;
+c1 := 2;
+b := 1;
+d1 := 12.1;
+y := false;
+
+write "Escribir pantalla";
+pri := "Hola";
+
+-/  Prueba while /-
+
+while(a1 < 10){
+if(b>0){
+    write a;
+}
+a1 := a1 + 1 ;
+}
+
+-/  Prueba AVG	/-
+
+a1:= a1 + AVG([2, a1+b, c1*(a1+b),48, 25/5]);
+b:= b * AVG([1, 2, 3]);
+
+-/  Prueba INLIST/-
+
+if(INLIST(a1;[a1+b; a1*(a1+b);48; 25/5; 32.3 ]) )
+{
+    write a1;
+}
+
+-/  Prueba INLIST con if /-
+
+while(INLIST(a1;[5; a1/b; 99]))
+{
+  if(a1>2)
+	{ 
+        c1:=99;
+	}
+  else{ 
+      b:=77;
+	}
+}

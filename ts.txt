@@ -1,4 +1,27 @@
 Nombre                   |Tipo                     |Valor                    |Longitud                 |Limite                   
-_a                       |float                    |a                        |1                        |0                        
-_-33000.00               |cfloat                   |-33000.00                |9                        |0                        
+_a1                      |float                    |a1                       |2                        |32766                    
+_a2                      |                         |a2                       |2                        |0                        
+_a3                      |                         |a3                       |2                        |0                        
+_b                       |int                      |b                        |1                        |0                        
+_c1                      |int                      |c1                       |2                        |0                        
+_c2                      |                         |c2                       |2                        |0                        
+_d1                      |float                    |d1                       |2                        |0                        
+_y                       |bool                     |y                        |1                        |0                        
+_pri                     |string                   |pri                      |3                        |0                        
+_seg                     |string                   |seg                      |3                        |0                        
+_0                       |cint                     |0                        |1                        |3                        
+_2                       |cint                     |2                        |1                        |0                        
+_1                       |cint                     |1                        |1                        |3                        
+_12.1                    |cfloat                   |12.1                     |4                        |1                        
+_false                   |cbool                    |false                    |5                        |1                        
+_escribir pantalla       |cstring                  |Escribir pantalla        |17                       |32767                    
+_hola                    |cstring                  |Hola                     |4                        |0                        
+_10                      |cint                     |10                       |2                        |0                        
+_48                      |cint                     |48                       |2                        |1                        
+_25                      |cint                     |25                       |2                        |1                        
+_5                       |cint                     |5                        |1                        |1                        
+_3                       |cint                     |3                        |1                        |32767                    
+_32.3                    |cfloat                   |32.3                     |4                        |1                        
+_99                      |cint                     |99                       |2                        |1                        
+_77                      |cint                     |77                       |2                        |1                        
 

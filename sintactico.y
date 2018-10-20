@@ -15,6 +15,7 @@
 
 extern int yylineno;
 extern char *yytext;
+FILE *yyin; // Puntero al archivo que se pasa por parametro en el main.
 int yylex();
 void yyerror(char *msg);
 
@@ -139,20 +140,13 @@ void symbolTableToExcel(symbol table[],char * ruta);
 
 /* funciones para validacion (cabeceras)*/
 /* funciones para validar el rango*/
-int validarInt(char entero[]);
-int validarFloat(char flotante[]);
-int validarString(char cadena[]);
-int	validarBooleano(char booleano[]);
-
-int longListaId = 0;   //estas variables se usan para ver el balanceo del defvar
-int longListaTipos = 0;//estas variables se usan para ver el balanceo del defvar
-                     // se van a ir sumando y cuando se ejecuta la regla lv : lt
-                     // compara que haya la misma cantidad de los dos lados
-int verificarBalanceo();
-/* fin de funciones para validacion */
+void guardarIntEnTs(char entero[]);
+void guardarFloatEnTs(char flotante[]);
+void guardarStringEnTs(char cadena[]);
+void guardarBooleanoEnTs(char booleano[]);
 
 /* funciones para que el bloque DecVar cargue la tabla de símbolos */
-char varTypeArray[2][100][50];
+char varTypeArray[2][100][50]; // Dos matrices de 100 filas y 50 columnas
 int idPos = 0;
 int typePos = 0;
 
@@ -178,79 +172,107 @@ void consolidateIdType();
 %type <s> expresion
 
 %%
-raiz: programa {    printf("Compila OK \n"); 
+raiz: programa {    fprintf(stdout,"\nCompila OK\n\n"); 
+                    fflush(stdout);
                     CrearSymbolTable(symbolTable,"ts.txt");
                     grabarPolaca(); }
     ;
 
 programa:
-    bloque_dec sentencias   {   printf("programa: bloque_dec sentencias \n");   }
-    | escritura             {   printf("programa: escritura \n");   }
-    | bloque_dec            {   printf("programa: bloque_dec \n");  }
+    bloque_dec sentencias   {   fprintf(stdout,"\nprograma - bloque_dec sentencias");
+                                fflush(stdout); }
+    | bloque_escritura             {   fprintf(stdout,"\nprograma - escritura");   
+                                fflush(stdout); }
+    | bloque_dec            {   fprintf(stdout,"\nprograma - bloque_dec");  
+                                fflush(stdout); }
+    ;
+
+bloque_escritura: 
+    escritura                       {   fprintf(stdout,"\nbloque_escritura - escritura");
+                                        fflush(stdout); }
+    | bloque_escritura escritura    {   fprintf(stdout,"\nbloque_escritura - bloque_escritura escritura");
+                                        fflush(stdout); }
     ;
 
 bloque_dec: 
-    DEFVAR declaraciones ENDDEF {   consolidateIdType();
-                                    printf(" bloque_dec : DEFVAR declaraciones ENDDEF \n ");    }
+    DEFVAR declaraciones ENDDEF {   fprintf(stdout,"\nbloque_dec - DEFVAR declaraciones ENDDEF");    
+                                    fflush(stdout); }
     ;
 
 declaraciones: 
-    declaraciones declaracion    {  printf("declaraciones: declaraciones declaracion \n");  }
-    | declaracion                {  printf("declaraciones: declaracion \n");    }
+    declaraciones declaracion    {  fprintf(stdout,"\ndeclaraciones - declaraciones declaracion");  
+                                    fflush(stdout); }
+    | declaracion                {  fprintf(stdout,"\ndeclaraciones - declaracion");
+                                    fflush(stdout); }
     ;
 
 declaracion:
-    lista_variables D_P lista_tipos_datos   {   verificarBalanceo(); 
-                                                printf("declaracion: lista_variables D_P lista_tipos_datos \n");    }
-    ;
-
-lista_tipos_datos: 
-    lista_tipos_datos COMA tipo_dato    {   longListaTipos++; 
-                                            printf("\nlista_tipos_datos: lista_tipos_datos COMA tipo_dato \n"); }
-    | tipo_dato                         {   longListaTipos++;
-                                            printf("\nlista_tipos_datos: tipo_dato \n");    }
+    lista_variables D_P tipo_dato   {   fprintf(stdout,"\ndeclaracion - lista_variables D_P tipo_dato");    
+                                        fflush(stdout); }
     ;
 
 lista_variables: 
-    lista_variables COMA ID {   longListaId++; 
-                                collectId(yylval.s);
-                                printf("\nlista_variables: lista_variables COMA ID: %s\n", yylval.s);   }
-    | ID    {   longListaId++;
-                collectId(yylval.s);
-                printf("lista_variables: ID: %s\n", yylval.s); }
+    lista_variables COMA ID {   collectId(yylval.s);
+                                fprintf(stdout,"\nlista_variables - lista_variables COMA ID: %s", yylval.s);   
+                                fflush(stdout); }
+    | ID    {   collectId(yylval.s);
+                fprintf(stdout,"\nlista_variables - ID: %s", yylval.s);
+                fflush(stdout); }
     ;
 
 tipo_dato: 
     STRING      {   collectType("string"); 
-                    printf("tipo_dato: STRING \n\n");   }
+                    fprintf(stdout,"\ntipo_dato - STRING");   
+                    fflush(stdout); 
+                    consolidateIdType();    }
     | FLOAT     {   collectType("float");
-                    printf("tipo_dato: FLOAT \n\n");    }
+                    fprintf(stdout,"\ntipo_dato - FLOAT");
+                    fflush(stdout); 
+                    consolidateIdType();    }
     | INT       {   collectType("int");
-                    printf("tipo_dato: INT \n\n");  }
+                    fprintf(stdout,"\ntipo_dato - INT"); 
+                    fflush(stdout); 
+                    consolidateIdType();    }
     | BOOL      {   collectType("bool");
-                    printf("tipo_dato: BOOL \n\n"); }
+                    fprintf(stdout,"\ntipo_dato - BOOL"); 
+                    fflush(stdout); 
+                    consolidateIdType();    }
     ;
 
 sentencias: 
-    sentencias sentencia    {   printf("sentencias: sentencias sentencia\n");   }
-    | sentencia             {   printf("sentencias: sentencia \n"); }
+    sentencias sentencia    {   fprintf(stdout,"\nsentencias - sentencias sentencia");   
+                                fflush(stdout); }
+    | sentencia             {   fprintf(stdout,"\nsentencias - sentencia"); 
+                                fflush(stdout); }
     ;
 
 sentencia: 
-    asignacion PUNTO_Y_COMA {   printf("sentencia: asignacion PUNTO_Y_COMA\n"); }
-    | iteracion             {   printf("sentencia: iteracion \n");  }
-    | decision              {   printf("sentencia: decision \n");   }
-    | escritura             {   printf("sentencia: escritura \n");  }
-    | lectura               {   printf("sentencia: lectura \n");    }
+    asignacion PUNTO_Y_COMA {   fprintf(stdout,"\nsentencia - asignacion PUNTO_Y_COMA"); 
+                                fflush(stdout); }
+    | iteracion             {   fprintf(stdout,"\nsentencia - iteracion");  
+                                fflush(stdout); }
+    | decision              {   fprintf(stdout,"\nsentencia - decision");   
+                                fflush(stdout); }
+    | escritura             {   fprintf(stdout,"\nsentencia - escritura");  
+                                fflush(stdout); }
+    | lectura               {   fprintf(stdout,"\nsentencia - lectura");    
+                                fflush(stdout); }
    	;
 
 decision: 
-    IF P_A condicion P_C L_A sentencias L_C {   printf("decision: IF P_A condicion P_C L_A sentencias L_C\n");
+    IF P_A condicion P_C L_A sentencias L_C {   fprintf(stdout,"\ndecision - IF P_A condicion P_C L_A sentencias L_C");
+                                                fflush(stdout);
+                                                fprintf(stdout,"\nInicio del then");
+                                                fflush(stdout);
                                                 desapilarEtiqueta();
                                                 strcat(Etiqueta,":");
                                                 apilarPolaca(Etiqueta);
-                                             }
-   | IF P_A condicion P_C L_A sentencias L_C {  printf("fin del then\n");
+                                                fprintf(stdout,"\nFin del then");   
+                                                fflush(stdout); }
+   | IF P_A condicion P_C L_A sentencias L_C {  fprintf(stdout,"\ndecision - IF P_A condicion P_C L_A sentencias L_C");
+                                                fflush(stdout);
+                                                fprintf(stdout,"\nInicio del then");
+                                                fflush(stdout);
                                                 strcpy(auxInlist,Etiqueta);
                                                 strcat(auxInlist,":");
                                                 generarEtiqueta();
@@ -261,13 +283,18 @@ decision:
                                                 strcat(Etiqueta,":");
                                                 // aca esta la magia
                                                 // aca termina la magia 
-                                                apilarEtiqueta(Etiqueta);   }
-    ELSE                                    {   printf("else\n");   }
-    L_A sentencias L_C                      {   printf("fin del else\n");
+                                                apilarEtiqueta(Etiqueta);
+                                                fprintf(stdout,"\nFin del then");
+                                                fflush(stdout); }
+    ELSE                                    {   fprintf(stdout,"\nInicio del else");
+                                                fflush(stdout);   }
+    L_A sentencias L_C                      {   fprintf(stdout,"\nFin del else");
+                                                fflush(stdout);
                                                 desapilarEtiqueta();
                                                 //strcat(EtiqDesa,":");
                                                 apilarPolaca(EtiqDesa); }
-    | IF P_A condicion P_C L_A  L_C         {   printf("fin del then\n");
+    | IF P_A condicion P_C L_A  L_C         {   fprintf(stdout,"\nFin del then");
+                                                fflush(stdout);
                                                 generarEtiqueta();//fin
                                                 apilarPolaca(Etiqueta);//fin
                                                 apilarPolaca("JMP");
@@ -275,31 +302,37 @@ decision:
                                                 strcat(EtiqDesa,":");
                                                 apilarPolaca(EtiqDesa);
                                                 apilarEtiqueta(Etiqueta);   }
-    ELSE                                     {   printf("else\n");   }
-    L_A sentencias L_C                      {   printf("fin del else\n");
+    ELSE                                    {   fprintf(stdout,"\nelse");
+                                                fflush(stdout); }
+    L_A sentencias L_C                      {   fprintf(stdout,"\nfin del else");
+                                                fflush(stdout);
                                                 desapilarEtiqueta();
                                                 strcat(EtiqDesa,":");                                           
                                                 apilarPolaca(EtiqDesa); }
    ;
 
 iteracion: 
-    WHILE   {   printf("while\n");
+    WHILE   {   fprintf(stdout,"\niteracion - WHILE");
+                fflush(stdout);
                 generarEtiqueta();//fin
                 apilarEtiquetaW(Etiqueta);
                 strcat(Etiqueta, ":");
                 apilarPolaca(Etiqueta); }
-    P_A condicion P_C L_A sentencias L_C    {   printf("\niteracion: WHILE P_A condicion P_C L_A sentencias\n");
+    P_A condicion P_C L_A sentencias L_C    {   fprintf(stdout,"\niteracion - P_A condicion P_C L_A sentencias");
+                                                fflush(stdout);
                                                 desapilarEtiquetaW(); 
                                                 apilarPolaca(EtiqDesaW);
                                                 apilarPolaca("JMP");
                                                 desapilarEtiqueta();
                                                 if(auxBool==0){
-                                                    printf("PASOOOO 1 \n\n");
+                                                    fprintf(stdout,"\nPASO 1");
+                                                    fflush(stdout);
                                                     strcat(EtiqDesa,":");
                                                     apilarPolaca(EtiqDesa);
                                                 }
                                                 else{
-                                                    printf("PASOOOO 2 \n\n");
+                                                    fprintf(stdout,"\nPASO 2");
+                                                    fflush(stdout);
                                                     strcat(auxInlistwhile,":");
                                                     apilarPolaca(auxInlistwhile);
                                                     strcpy(auxInlistwhile, "");
@@ -308,26 +341,31 @@ iteracion:
     ;
 
 asignacion: 
-    ID ASIG expresion           {   printf("asignacion: ID ASIG expresion\n");
+    ID ASIG expresion           {   fprintf(stdout,"\nasignacion - ID ASIG expresion");
+                                    fflush(stdout);
                                     auxSymbol = getSymbol($1);
                                     validarTipos(auxSymbol.tipo);
                                     auxSymbol = nullSymbol;
                                     apilarPolaca($1);
                                     apilarPolaca("=");  }
-    | ID ASIG concatenacion     {   printf("asignacion: ID ASIG concatenacion\n");
+    | ID ASIG concatenacion     {   fprintf(stdout,"\nasignacion - ID ASIG concatenacion");
+                                    fflush(stdout);
                                     auxSymbol = getSymbol($1);
                                     if(strcmp(auxSymbol.tipo,"string")!=0){ 
                                         auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
                                     }
                                     //validarTipos("string");
-                                    printf("Aca hay que validar asignacion: ID ASIG concatenacion \n");
+                                    fprintf(stdout,"\nAca hay que validar asignacion: ID ASIG concatenacion");
+                                    fflush(stdout);
                                     validarTipos("string");
                                     apilarPolaca($1);
                                     apilarPolaca("=");  }
     ;
     
 concatenacion: 
-    ID OP_CONCAT ID                  {  auxSymbol = getSymbol($1);
+    ID OP_CONCAT ID                  {  fprintf(stdout,"\nconcatenacion - ID OP_CONCAT ID");
+                                        fflush(stdout);
+                                        auxSymbol = getSymbol($1);
                                         if(strcmp(auxSymbol.tipo,"string")!=0){ 
                                             auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
                                         }
@@ -336,77 +374,95 @@ concatenacion:
                                             auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
                                         }
                                         validarTipos("string");
-                                        printf("acá hay que validar concatenacion: ID OP_CONCAT ID");
+                                        fprintf(stdout,"\nacá hay que validar concatenacion: ID OP_CONCAT ID");
+                                        fflush(stdout);
                                         apilarPolaca($1);
                                         apilarPolaca($3);
                                         apilarPolaca("++"); }
-    | ID OP_CONCAT constanteString  {   auxSymbol = getSymbol($1);
+    | ID OP_CONCAT constanteString  {   fprintf(stdout,"\nconcatenacion - ID OP_CONCAT constanteString");
+                                        fflush(stdout);
+                                        auxSymbol = getSymbol($1);
                                         if(strcmp(auxSymbol.tipo,"string")!=0){
                                             auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
                                         }
-                                        printf("acá hay que validar concatenacion: ID OP_CONCAT constanteString");
+                                        fprintf(stdout,"\nacá hay que validar concatenacion: ID OP_CONCAT constanteString");
                                         trampearPolaca($1);
                                         validarTipos("string");
                                         apilarPolaca("++"); }
-    | constanteString OP_CONCAT ID  {   auxSymbol = getSymbol($3);
+    | constanteString OP_CONCAT ID  {   fprintf(stdout,"\nconcatenacion - constanteString OP_CONCAT ID");
+                                        fflush(stdout);
+                                        auxSymbol = getSymbol($3);
                                         if(strcmp(auxSymbol.tipo,"string")!=0){
                                             auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
                                         }
-                                        printf("acá hay que validar concatenacion: constanteString OP_CONCAT ID");
+                                        fprintf(stdout,"\nacá hay que validar concatenacion: constanteString OP_CONCAT ID");
+                                        fflush(stdout);
                                         validarTipos("string");
                                         apilarPolaca($3);
                                         apilarPolaca("++"); }
-    | constanteString OP_CONCAT constanteString {   validarTipos("string");
+    | constanteString OP_CONCAT constanteString {   fprintf(stdout,"\nconcatenacion - constanteString OP_CONCAT constanteString");
+                                                    fflush(stdout);
+                                                    validarTipos("string");
                                                     apilarPolaca("++");     }
-    | constanteString                   {   /*validarTipos("string");*/;    }
+    | constanteString                   {   fprintf(stdout,"\nconcatenacion - constanteString");
+                                            fflush(stdout);
+                                            /*validarTipos("string");*/ }
     ;
 
 condicion: 
-    expresion CMP_MAY expresion     {   printf("condicion  : expresion CMP_MAY expresion \n");
+    expresion CMP_MAY expresion     {   fprintf(stdout,"\ncondicion - expresion CMP_MAY expresion");
+                                        fflush(stdout);
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
                                         apilarPolaca("JNB");    }
-    | expresion CMP_MEN expresion   {   printf("condicion  | expresion CMP_MEN expresion \n");
+    | expresion CMP_MEN expresion   {   fprintf(stdout,"\ncondicion - expresion CMP_MEN expresion");
+                                        fflush(stdout);
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
                                         apilarPolaca("JNA");    }
-    | expresion CMP_MAYI expresion   {  printf("condicion:  \n");
+    | expresion CMP_MAYI expresion   {  fprintf(stdout,"\ncondicion - expresion CMP_MAYI expresion");
+                                        fflush(stdout);
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
                                         apilarPolaca("JNBE");   }
-    | expresion CMP_MENI expresion  {   printf("condicion: CMP_MENI expresion   \n");
+    | expresion CMP_MENI expresion  {   fprintf(stdout,"\ncondicion - expresion CMP_MENI expresion");
+                                        fflush(stdout);
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
                                         apilarPolaca("JNAE");   }
-    | expresion CMP_DIST expresion  {   printf("condicion: CMP_DIST expresion   \n");
+    | expresion CMP_DIST expresion  {   fprintf(stdout,"\ncondicion - expresion CMP_DIST expresion");
+                                        fflush(stdout);
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta);
                                         apilarPolaca("JE"); }
-    | expresion CMP_IGUAL expresion {   printf("condicion: CMP_IGUAL expresion  \n");
+    | expresion CMP_IGUAL expresion {   fprintf(stdout,"\ncondicion - expresion CMP_IGUAL expresion");
+                                        fflush(stdout);
                                         validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta); 
                                         apilarPolaca("JNZ");    }
-    | INLIST P_A ID                 {   //printf("CONDICION: INLIST \n");
+    | INLIST P_A ID                 {   fprintf(stdout,"\ncondicion - INLIST P_A ID");
+                                        fflush(stdout);
+                                        //fprintf(stdout,"CONDICION: INLIST \n");
                                         //generarEtiqueta();
-                                        //printf("ETIQUETA DEL if con INLIST=  %s \n\n\n",Etiqueta);
+                                        //fprintf(stdout,"ETIQUETA DEL if con INLIST=  %s \n\n\n",Etiqueta);
                                         //apilarPolaca(Etiqueta);
                                         apilarPolaca("_aux"); //creo variable auxiliar para guardar el resultado de 
                                                             //la busqueda de la funcion INLIST
@@ -414,23 +470,27 @@ condicion:
                                         apilarPolaca("=");
                                         strcpy(auxInlist,$3);
                                         apilarPolaca(auxInlist);    }
-    PUNTO_Y_COMA C_A contenido_inlist C_C P_C   {   auxBool=1; 
-                                                    //printf("inlist: INLIST P_A ID PUNTO_Y_COMA C_A contenido_inlist C_C P_C\n");
+    PUNTO_Y_COMA C_A contenido_inlist C_C P_C   {   fprintf(stdout,"\ncondicion - PUNTO_Y_COMA C_A contenido_inlist C_C P_C");
+                                                    fflush(stdout);
+                                                    auxBool=1; 
+                                                    //fprintf(stdout,"inlist: INLIST P_A ID PUNTO_Y_COMA C_A contenido_inlist C_C P_C\n");
                                                     apilarPolaca("_aux");
                                                     apilarPolaca("1");
                                                     apilarPolaca("CMP");
                                                     generarEtiqueta();
-                                                    printf("ETIQUETA if de INLIST=  %s \n\n\n",Etiqueta);
+                                                    fprintf(stdout,"\nETIQUETA if de INLIST=  %s:",Etiqueta);
+                                                    fflush(stdout);
                                                     apilarPolaca(Etiqueta);
                                                     apilarPolaca("JNZ");
                                                     strcpy(auxInlistwhile,Etiqueta);   }
     ;
 
 contenido_inlist: 
-    expresion   {   //printf("contenido_inlist: expresion\n");
+    expresion   {   fprintf(stdout,"\ncontenido_inlist - expresion");
+                    fflush(stdout);
                     apilarPolaca("CMP");
                     generarEtiqueta();
-                    printf("ETIQUETA 1=  %s \n",Etiqueta);
+                    fprintf(stdout,"\nETIQUETA 1 =  %s",Etiqueta);
                     apilarPolaca(Etiqueta);
                     apilarPolaca("JNZ");
                     apilarPolaca("_aux"); 
@@ -438,14 +498,17 @@ contenido_inlist:
                     apilarPolaca("=");  
                     desapilarEtiqueta();
                     strcat(Etiqueta,":");
-                    printf("DESAPILAR ETIQUETA 1=  %s \n",Etiqueta);
+                    fprintf(stdout,"\nDESAPILAR ETIQUETA 1=  %s",Etiqueta);
                     apilarPolaca(Etiqueta); }
 
-	| contenido_inlist  PUNTO_Y_COMA    {   apilarPolaca(auxInlist);    }
-        expresion   {   //printf("contenido_inlist: contenido_inlist PUNTO_Y_COMA expresion\n");
+	| contenido_inlist  PUNTO_Y_COMA    {   fprintf(stdout,"contenido_inlist - contenido_inlist PUNTO_Y_COMA expresion\n");
+                                            fflush(stdout);
+                                            apilarPolaca(auxInlist);    }
+        expresion   {   //fprintf(stdout,"contenido_inlist: contenido_inlist PUNTO_Y_COMA expresion\n");
                         apilarPolaca("CMP"); 
                         generarEtiqueta();
-                        printf("ETIQUETA 1=  %s \n",Etiqueta);
+                        fprintf(stdout,"\nETIQUETA 1=  %s",Etiqueta);
+                        fflush(stdout);
                         apilarPolaca(Etiqueta);
                         apilarPolaca("JNZ");
                         apilarPolaca("_aux"); 
@@ -453,178 +516,144 @@ contenido_inlist:
                         apilarPolaca("=");
                         desapilarEtiqueta();
                         strcat(Etiqueta,":");
-                        printf("DESAPILAR ETIQUETA 1=  %s \n",Etiqueta);
+                        fprintf(stdout,"\nDESAPILAR ETIQUETA 1=  %s",Etiqueta);
+                        fflush(stdout);
                         apilarPolaca(Etiqueta); }
     ;
     
 expresion:
-    expresion OP_SUM termino        {   printf("expresion: expresion OP_SUM termino \n"); 
+    expresion OP_SUM termino        {   fprintf(stdout,"\nexpresion - expresion OP_SUM termino"); 
+                                        fflush(stdout);
                                         validarTipos("float");
                                         apilarPolaca("+");  }
-    | expresion OP_RES termino      {   printf("expresion: expresion OP_RES termino\n"); 
+    | expresion OP_RES termino      {   fprintf(stdout,"\nexpresion - expresion OP_RES termino"); 
                                         validarTipos("float");
                                         apilarPolaca("-");  }
-    | termino                       {   printf("expresion: termino  \n");   }
+    | termino                       {   fprintf(stdout,"\nexpresion - termino");   }
     ;
 
 termino: 
-    termino OP_MUL factor       {   printf("termino: termino OP_MUL factor \n"); 
+    termino OP_MUL factor       {   fprintf(stdout,"\ntermino - termino OP_MUL factor"); 
+                                    fflush(stdout);
                                     validarTipos("float");
                                     apilarPolaca("*");  }
-    | termino OP_DIV factor     {   printf("termino: termino OP_DIV factor \n"); 
+    | termino OP_DIV factor     {   fprintf(stdout,"\ntermino - termino OP_DIV factor"); 
+                                    fflush(stdout);
                                     validarTipos("float");
                                     apilarPolaca("/");  }
-    | termino DIV factor        {   printf("termino: termino DIV factor \n"); 
+    | termino DIV factor        {   fprintf(stdout,"\ntermino - termino DIV factor"); 
+                                    fflush(stdout);
                                     validarTipos("float");
                                     apilarPolaca("DIV");    }
-    | termino MOD factor        {   printf("termino: termino MOD factor \n"); 
+    | termino MOD factor        {   fprintf(stdout,"\ntermino - termino MOD factor"); 
+                                    fflush(stdout);
                                     validarTipos("float");
                                     apilarPolaca("MOD");    }
-    | factor                    {   printf("termino: factor \n");   }
+    | factor                    {   fprintf(stdout,"\ntermino - factor");
+                                    fflush(stdout);   }
     ;
 
 factor: 
-    P_A expresion P_C           {   printf("factor: P_A expresion P_C  \n");    }
-    | ID                        {   printf("factor: ID (insertando tipo) \n");
+    P_A expresion P_C           {   fprintf(stdout,"\nfactor - P_A expresion P_C");
+                                    fflush(stdout); }
+    | ID                        {   fprintf(stdout,"\nfactor - ID (insertando tipo)");
+                                    fflush(stdout);
                                     auxSymbol=getSymbol($1);
                                     insertarTipo(auxSymbol.tipo);
-                                    printf("Tipo insertado de ID=  %s \n",auxSymbol.tipo);
+                                    fprintf(stdout,"\nTipo insertado de ID=  %s",auxSymbol.tipo);
+                                    fflush(stdout);
                                     apilarPolaca($1);   }
-    | constanteNumerica
-    | avg                       {   printf("factor: avg \n");
+    | constanteNumerica         {   fprintf(stdout,"\nfactor - constanteNumerica");
+                                    fflush(stdout); }
+    | avg                       {   fprintf(stdout,"\nfactor - avg");
+                                    fflush(stdout);
                                     sprintf(stringAVG, "%d", contAVG); // replaced itoa(contAVG, stringAVG, 10) for this.
                                     apilarPolaca(stringAVG);
                                     apilarPolaca("/");  }
     ;
 
 avg: 
-    AVG P_A C_A contenido_avg C_C P_C   {   printf("avg : AVG P_A C_A contenido_avg C_C P_C \n");   }
+    AVG P_A C_A contenido_avg C_C P_C   {   fprintf(stdout,"\navg - AVG P_A C_A contenido_avg C_C P_C");
+                                            fflush(stdout); }
 	;
 
 contenido_avg: 
-    expresion    					{   printf("contenido_avg: expresion ---> Cont:=1 \n ");    }
+    expresion    					{   fprintf(stdout,"\ncontenido_avg - expresion ---> Cont:=1");
+                                        fflush(stdout); }
 	| contenido_avg COMA expresion  {   contAVG++; 
-                                        printf("contenido_avg: contenido_avg COMA expresion %d \n", contAVG); 
+                                        fprintf(stdout,"\ncontenido_avg - contenido_avg COMA expresion %d", contAVG); 
+                                        fflush(stdout);
                                         apilarPolaca("+");  }
     ;
 
 constanteNumerica: 
-    ENTERO              {   validarInt(yylval.s);
-                            printf("constante ENTERO: %s\n", yylval.s);
+    ENTERO              {   guardarIntEnTs(yylval.s);
+                            fprintf(stdout,"\nconstante - ENTERO: %s", yylval.s);
+                            fflush(stdout);
                             apilarPolaca(yylval.s); }
-    | REAL              {   validarFloat(yylval.s);
-                            printf("constante REAL: %s\n" , yylval.s);
+    | REAL              {   guardarFloatEnTs(yylval.s);
+                            fprintf(stdout,"\nconstante - REAL: %s" , yylval.s);
+                            fflush(stdout);
                             apilarPolaca(yylval.s); }
-    | BOOLEANO          {   validarBooleano(yylval.s);
-                            printf("constante BOOLEANO: %s\n" , yylval.s); 
+    | BOOLEANO          {   guardarBooleanoEnTs(yylval.s);
+                            fprintf(stdout,"\nconstante - BOOLEANO: %s" , yylval.s); 
+                            fflush(stdout);
                             apilarPolaca(yylval.s); }
     ;
 constanteString: 
-    STRING_CONST        {   validarString(yylval.s);
-                            printf("constante STRING %s\n" , yylval.s);    }
+    STRING_CONST        {   guardarStringEnTs(yylval.s);
+                            fprintf(stdout,"\nconstante - STRING %s" , yylval.s);
+                            fflush(stdout); }
     ;
 
 escritura:
-    WRITE expresion PUNTO_Y_COMA        {   printf("escritura: WRITE expresion PUNTO_Y_COMA");
+    WRITE expresion PUNTO_Y_COMA        {   fprintf(stdout,"\nescritura - WRITE expresion PUNTO_Y_COMA");
+                                            fflush(stdout);
                                             apilarPolaca("WRITE");
                                             resetTipos();   }
-    | WRITE concatenacion PUNTO_Y_COMA  {   printf("escritura: WRITE concatenacion PUNTO_Y_COMA");
+    | WRITE concatenacion PUNTO_Y_COMA  {   fprintf(stdout,"\nescritura - WRITE concatenacion PUNTO_Y_COMA");
+                                            fflush(stdout);
                                             apilarPolaca("WRITE");
                                             resetTipos();   }
     ;
 
 lectura:
-    READ ID PUNTO_Y_COMA    {   printf("lectura: READ ID PUNTO_Y_COMA"); 
+    READ ID PUNTO_Y_COMA    {   fprintf(stdout,"\nlectura - READ ID PUNTO_Y_COMA"); 
+                                fflush(stdout);
                                 apilarPolaca("READ");   }
-    ;
 
+    ;
 %%
 
 /* funciones para validacion */
-int validarBooleano( char Booleano[]) {
- 	char msg[100];
-	if (strcmp(Booleano, "true")!= 0 && strcmp(Booleano, "false")!=0){
-	    sprintf(msg, "ERROR: %s no es un tipo booleano\n" , Booleano);
-        yyerror(msg);
-        return 1;
-	}
-	else{
-	//	printf("Booleano ok! %s \n", Booleano);
-	    saveSymbol(Booleano,"cBool", NULL);
-    	insertarTipo("cBool");
-		return 0;
-	}		
+void guardarBooleanoEnTs(char Booleano[]) {
+    saveSymbol(Booleano,"cBool", NULL);
+    insertarTipo("cBool");		
 }
 
-int validarInt(char entero[]){
-    int casteado = atoi(entero);
-    char msg[100];
-    if(casteado < -32768 || casteado > 32767) {
-        sprintf(msg, "ERROR: Entero %d fuera de rango. Debe estar entre [-32768; 32767]\n", casteado);
-        yyerror(msg);
-        return 1;
-    }
-    else{
-        //guardarenTS
-        saveSymbol(entero,"cInt", NULL);
-        insertarTipo("cInt");
-
-        //printf solo para pruebas:
-        //printf("Entero ok! %d \n", casteado);
-        return 0;
-    }
+void guardarIntEnTs(char entero[]) {
+    saveSymbol(entero,"cInt", NULL);
+    insertarTipo("cInt");
 }
 
-int validarFloat(char flotante[]) {
-    double casteado = atof(flotante);
-    casteado = fabs(casteado);
-    char msg[300];
-
-    if(casteado < FLT_MIN || casteado > FLT_MAX) {
-        sprintf(msg, "ERROR: Float %f fuera de rango. Debe estar entre [1.17549e-38; 3.40282e38]\n", casteado);
-        yyerror(msg);
-        return 1;
-    }
-    else{
-        saveSymbol(flotante,"cFloat", NULL);
-        insertarTipo("cFloat");
-        // guardarenTS
-        // printf solo para pruebas:
-        // printf("Float ok! %f \n", casteado);
-        return 0;
-    }
+void guardarFloatEnTs(char flotante[]) {
+    saveSymbol(flotante,"cFloat", NULL);
+    insertarTipo("cFloat");
 }
 
-int validarString(char cadena[]) {
-    char msg[100];
-    int longitud = strlen(cadena);
-    if( strlen(cadena) > 32){ //en lugar de 30 verifica con 32 porque el string viene entre comillas
-        sprintf(msg, "ERROR: Cadena %s demasiado larga. Maximo 30 caracteres\n", cadena);
-        yyerror(msg);
-    }
+void guardarStringEnTs(char cadena[]) {
     char sincomillas[31];
+    int longitud = strlen(cadena);
     int i;
-    for(i=0; i< longitud - 2 ; i++) {
+    for(i=0; i<longitud - 2 ; i++) {
             sincomillas[i]=cadena[i+1];
     }
     sincomillas[i]='\0';
-    //guardarenTS();
     saveSymbol(sincomillas,"cString", NULL);
     insertarTipo("string");
     reemplazarBlancos(sincomillas);
     apilarPolaca(sincomillas);
-    return 0;
 }
-
-int verificarBalanceo(){
-    if(longListaTipos != longListaId){
-        yyerror("La declaracion de variables debe tener mismo numero de miembros a cada lado del : ");
-    }
-    longListaTipos = longListaId = 0;
-    return 0;
-}
-/* fin de funciones para validacion */
-
 
 /* funciones para que el bloque DecVar cargue la tabla de símbolos */
 void collectId (char *id) {
@@ -636,9 +665,8 @@ void collectType (char *type){
 }
 
 void consolidateIdType() {
-    printf("Guardando data en tabla de simbolos\n");
     int i;
-    for(i=0; i < idPos; i++ ) {
+    for(i=0; i < idPos; i++) {
         saveSymbol(varTypeArray[0][i],varTypeArray[1][i], NULL);
     }
     idPos=0;
@@ -747,7 +775,8 @@ int compararTipos(char *a, char *b){
     strcpy(auxb,b);
     downcase(auxa);
     downcase(auxb);
-    printf("Comparando %s y %s\n",auxa,auxb);
+    // fprintf(stdout,"Comparando %s y %s",auxa,auxb);
+    // fflush(stdout);
     
     // sino se declaro alguna variable asigno null a tipo
     if (!strcmp(auxa, ""))
@@ -758,16 +787,16 @@ int compararTipos(char *a, char *b){
     
     // Si se agrego algun null salgo
     if(!strcmp(auxa, "null") || !strcmp(auxb, "null") ){
-      //     printf("Son iguales\n");
+      //     fprintf(stdout,"Son iguales\n");
            return 2;
     }
     // si  le asigno a un float un int lo deja pasar
     if ( !strcmp(auxa, "float") && !strcmp(auxb, "cint") ){
-        //   printf("Son iguales\n");
+        //   fprintf(stdout,"Son iguales\n");
            return 0;
     }
     if(!strcmp(auxa, "float") && !strcmp(auxb, "int") ){
-       //    printf("Son iguales\n");
+       //    fprintf(stdout,"Son iguales\n");
            return 0;
     }
     if (strstr(auxa,auxb) != NULL){
@@ -784,11 +813,11 @@ int validarTipos(char tipo[]) {
     int i;
     for(i=0; i< contTipos; i++){
         if(compararTipos(tipo,tipos[i])==2){
-            sprintf(msg, "Variable no declarada\n");
+            sprintf(msg, "Variable no declarada");
             yyerror(msg);
         }
         if(compararTipos(tipo,tipos[i])!=0){
-            sprintf(msg, "ERROR: Tipos incompatibles\n");
+            sprintf(msg, "Tipos incompatibles");
             yyerror(msg);
         }
     }
@@ -880,20 +909,28 @@ void desapilarEtiquetaW(){
 
 int main(int argc,  char *argv[]){
     if ((ArchivoPolaca = fopen("intermedia.txt", "wt")) == NULL) {
-        fprintf(stderr,"\nNo se puede abrir el archivo: %s\n", "intermedia.txt");
+        fprintf(stderr,"\nNo se puede crear el archivo: %s", "intermedia.txt");
         exit(1);
     }
+    if ((yyin = fopen(argv[1], "rt")) == NULL){
+	    fprintf(stderr, "\nNo se puede abrir el archivo: %s", argv[1]);
+        exit(1);
+	}
     strcpy(nullSymbol.nombre, "!");  // inicializando simbolo nulo
     yyparse();
-    // fclose(ArchivoPolaca);
+    fclose(ArchivoPolaca);
+    fclose(yyin);
     return 0;
 }
 
 void yyerror(char *msg){
-    system("cls");
-    fprintf(stderr, "At line %d %s \n", yylineno, msg);
-    //fprintf(stderr, "At line %d %s in text: %s\n", yylineno, msg, yytext);
+    fflush(stderr);
+    fprintf(stderr, "\n\n--- ERROR ---\nAt line %d: \'%s\'.\n\n", yylineno, msg);
     exit(1);
+}
+
+void imprimirPorConsola(char *str){
+    fflush(stdout);
 }
 
 void reemplazarBlancos(char *cad){
