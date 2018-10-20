@@ -48,6 +48,8 @@ char pilaPolaca[500][50];
 int pilaWhile[150];
 int topePilaWhile = 0;
 
+int posicionActualPol = 0; // guardo la posicion actual de la polaca.
+
 void apilarWhile(int pos);
 int desapilarWhile();
 
@@ -341,23 +343,40 @@ iteracion:
     ;
 
 asignacion: 
-    ID ASIG expresion           {   fprintf(stdout,"\nasignacion - ID ASIG expresion");
+    lista_asignacion expresion  {   fprintf(stdout,"\nasignacion - ID ASIG expresion");
                                     fflush(stdout);
-                                    auxSymbol = getSymbol($1);
-                                    validarTipos(auxSymbol.tipo);
-                                    auxSymbol = nullSymbol;
-                                    apilarPolaca($1);
-                                    apilarPolaca("=");  }
-    | ID ASIG concatenacion     {   fprintf(stdout,"\nasignacion - ID ASIG concatenacion");
+                                    insertarPolaca($2,posicionActualPol);
+                                    posicionActualPol = 0;
+                                }
+    | lista_asignacion concatenacion     {   fprintf(stdout,"\nasignacion - ID ASIG concatenacion");
                                     fflush(stdout);
-                                    auxSymbol = getSymbol($1);
-                                    if(strcmp(auxSymbol.tipo,"string")!=0){ 
-                                        auxSymbol = nullSymbol; 
-                                        yyerror("Tipos incompatibles");
+                                    // auxSymbol = getSymbol($1);
+                                    // if(strcmp(auxSymbol.tipo,"string")!=0){ 
+                                    //     auxSymbol = nullSymbol; 
+                                    //     yyerror("Tipos incompatibles");
+                                    // }
+                                    // validarTipos("string");
+                                    // // apilarPolaca($1);
+                                    // apilarPolaca("=");  
                                     }
-                                    validarTipos("string");
+    ;
+
+lista_asignacion:
+    ID ASIG                     {   fprintf(stdout,"\nlista_asignacion - ID ASIG"); 
+                                    fflush(stdout); 
+                                    apilarPolaca("_aux");
+                                    posicionActualPol = posPolaca;
+                                    apilarPolaca("");
+                                    apilarPolaca("=");
                                     apilarPolaca($1);
-                                    apilarPolaca("=");  }
+                                    apilarPolaca("_aux");
+                                    apilarPolaca("=");
+                                    }
+    | lista_asignacion ID ASIG    {     fprintf(stdout,"\nlista_asignacion - lista_asignacion ID ASIG");
+                                        fflush(stdout); 
+                                        apilarPolaca($2);
+                                        apilarPolaca("_aux");
+                                        apilarPolaca("=");  }
     ;
     
 concatenacion: 
@@ -410,7 +429,7 @@ concatenacion:
 condicion: 
     expresion CMP_MAY expresion     {   fprintf(stdout,"\ncondicion - expresion CMP_MAY expresion");
                                         fflush(stdout);
-                                        validarTipos("float");
+                                        // validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
@@ -418,7 +437,7 @@ condicion:
                                         apilarPolaca("JNB");    }
     | expresion CMP_MEN expresion   {   fprintf(stdout,"\ncondicion - expresion CMP_MEN expresion");
                                         fflush(stdout);
-                                        validarTipos("float");
+                                        // validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
@@ -426,7 +445,7 @@ condicion:
                                         apilarPolaca("JNA");    }
     | expresion CMP_MAYI expresion   {  fprintf(stdout,"\ncondicion - expresion CMP_MAYI expresion");
                                         fflush(stdout);
-                                        validarTipos("float");
+                                        // validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
@@ -434,7 +453,7 @@ condicion:
                                         apilarPolaca("JNBE");   }
     | expresion CMP_MENI expresion  {   fprintf(stdout,"\ncondicion - expresion CMP_MENI expresion");
                                         fflush(stdout);
-                                        validarTipos("float");
+                                        // validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
@@ -442,7 +461,7 @@ condicion:
                                         apilarPolaca("JNAE");   }
     | expresion CMP_DIST expresion  {   fprintf(stdout,"\ncondicion - expresion CMP_DIST expresion");
                                         fflush(stdout);
-                                        validarTipos("float");
+                                        // validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
@@ -450,7 +469,7 @@ condicion:
                                         apilarPolaca("JE"); }
     | expresion CMP_IGUAL expresion {   fprintf(stdout,"\ncondicion - expresion CMP_IGUAL expresion");
                                         fflush(stdout);
-                                        validarTipos("float");
+                                        // validarTipos("float");
                                         apilarPolaca("CMP");
                                         generarEtiqueta();
                                         apilarEtiqueta(Etiqueta);
@@ -522,10 +541,8 @@ contenido_inlist:
 expresion:
     expresion OP_SUM termino        {   fprintf(stdout,"\nexpresion - expresion OP_SUM termino"); 
                                         fflush(stdout);
-                                        validarTipos("float");
                                         apilarPolaca("+");  }
-    | expresion OP_RES termino      {   fprintf(stdout,"\nexpresion - expresion OP_RES termino"); 
-                                        validarTipos("float");
+    | expresion OP_RES termino      {   fprintf(stdout,"\nexpresion - expresion OP_RES termino");
                                         apilarPolaca("-");  }
     | termino                       {   fprintf(stdout,"\nexpresion - termino");   }
     ;

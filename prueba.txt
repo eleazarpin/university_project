@@ -1,13 +1,16 @@
 DEFVAR
 
-a1,a2,a3 : float
-b : int
+a1 : INT
+a2,a3 : FLOAT
+b : INT
 c1,c2 : INT
-d1 : float
-y : bool
+d1 : FLOAT
+y : BOOL
 
-pri : string
-seg : string
+pri : STRING
+seg,sec : STRING
+
+r1,r2 : INT
 
 ENDDEF
 
@@ -17,16 +20,18 @@ b := 1;
 d1 := 12.1;
 y := false;
 
+r1 := r2 := 1+2;
+
 write "Escribir pantalla";
 pri := "Hola";
 
 -/  Prueba while /-
 
 while(a1 < 10){
-if(b>0){
-    write a;
-}
-a1 := a1 + 1 ;
+    if(b > 0){
+        write a;
+    }
+    a1 := a1 + 1 ;
 }
 
 -/  Prueba AVG	/-
