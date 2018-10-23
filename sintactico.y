@@ -98,6 +98,8 @@ void writeTupla(FILE *p ,int filas,symbol symbolTable[]){
     int j;
     for(j=0; j < filas; j++ ){
         fprintf(p,"%-25s",symbolTable[j].nombre);
+        if(j!=0 && strlen(symbolTable[j].tipo) <= 0)
+            strcpy(symbolTable[j].tipo, symbolTable[j-1].tipo);
         fprintf(p,"|%-25s",symbolTable[j].tipo);
         fprintf(p,"|%-25s",symbolTable[j].valor);
         fprintf(p,"|%-25d",symbolTable[j].longitud);
@@ -126,7 +128,7 @@ void CrearSymbolTable(symbol symbolTable[],char * ruta){
     //Declaracion de variables
     //Definicion del archivo de salida y su cabecera
     FILE  *p = fopen(ruta, "w");
-    writeTable(p,pos_st  , symbolTable,writeTupla);
+    writeTable(p, pos_st, symbolTable, writeTupla);
     //Fin
     fclose(p);
 }
@@ -183,7 +185,7 @@ raiz: programa {    fprintf(stdout,"\nCompila OK\n\n");
 programa:
     bloque_dec sentencias   {   fprintf(stdout,"\nprograma - bloque_dec sentencias");
                                 fflush(stdout); }
-    | bloque_escritura             {   fprintf(stdout,"\nprograma - escritura");   
+    | bloque_escritura      {   fprintf(stdout,"\nprograma - escritura");   
                                 fflush(stdout); }
     | bloque_dec            {   fprintf(stdout,"\nprograma - bloque_dec");  
                                 fflush(stdout); }
@@ -348,22 +350,25 @@ asignacion:
                                     insertarPolaca($2,posicionActualPol);
                                     posicionActualPol = 0;
                                 }
-    | lista_asignacion concatenacion     {   fprintf(stdout,"\nasignacion - ID ASIG concatenacion");
-                                    fflush(stdout);
-                                    // auxSymbol = getSymbol($1);
-                                    // if(strcmp(auxSymbol.tipo,"string")!=0){ 
-                                    //     auxSymbol = nullSymbol; 
-                                    //     yyerror("Tipos incompatibles");
-                                    // }
-                                    // validarTipos("string");
-                                    // // apilarPolaca($1);
-                                    // apilarPolaca("=");  
+    | lista_asignacion concatenacion     {  fprintf(stdout,"\nasignacion - ID ASIG concatenacion");
+                                            fflush(stdout);
+                                            // auxSymbol = getSymbol($1);
+                                            // if(strcmp(auxSymbol.tipo,"string")!=0){ 
+                                            //     auxSymbol = nullSymbol; 
+                                            //     yyerror("Tipos incompatibles");
+                                            // }
+                                            // validarTipos("string");
+                                            // // apilarPolaca($1);
+                                            // apilarPolaca("=");  
                                     }
     ;
 
 lista_asignacion:
     ID ASIG                     {   fprintf(stdout,"\nlista_asignacion - ID ASIG"); 
                                     fflush(stdout); 
+                                    auxSymbol = getSymbol($1);
+                                    // validarTipos(auxSymbol.tipo);
+                                    auxSymbol = nullSymbol;
                                     apilarPolaca("_aux");
                                     posicionActualPol = posPolaca;
                                     apilarPolaca("");
@@ -382,15 +387,15 @@ lista_asignacion:
 concatenacion: 
     ID OP_CONCAT ID                  {  fprintf(stdout,"\nconcatenacion - ID OP_CONCAT ID");
                                         fflush(stdout);
-                                        auxSymbol = getSymbol($1);
-                                        if(strcmp(auxSymbol.tipo,"string")!=0){ 
-                                            auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
-                                        }
-                                        auxSymbol = getSymbol($3);
-                                        if(strcmp(auxSymbol.tipo,"string")!=0){
-                                            auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
-                                        }
-                                        validarTipos("string");
+                                        // auxSymbol = getSymbol($1);
+                                        // if(strcmp(auxSymbol.tipo,"string")!=0){ 
+                                        //     auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
+                                        // }
+                                        // auxSymbol = getSymbol($3);
+                                        // if(strcmp(auxSymbol.tipo,"string")!=0){
+                                        //     auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
+                                        // }
+                                        // validarTipos("string");
                                         fprintf(stdout,"\nacá hay que validar concatenacion: ID OP_CONCAT ID");
                                         fflush(stdout);
                                         apilarPolaca($1);
@@ -398,28 +403,28 @@ concatenacion:
                                         apilarPolaca("++"); }
     | ID OP_CONCAT constanteString  {   fprintf(stdout,"\nconcatenacion - ID OP_CONCAT constanteString");
                                         fflush(stdout);
-                                        auxSymbol = getSymbol($1);
-                                        if(strcmp(auxSymbol.tipo,"string")!=0){
-                                            auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
-                                        }
+                                        // auxSymbol = getSymbol($1);
+                                        // if(strcmp(auxSymbol.tipo,"string")!=0){
+                                        //     auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
+                                        // }
                                         fprintf(stdout,"\nacá hay que validar concatenacion: ID OP_CONCAT constanteString");
                                         trampearPolaca($1);
-                                        validarTipos("string");
+                                        // validarTipos("string");
                                         apilarPolaca("++"); }
     | constanteString OP_CONCAT ID  {   fprintf(stdout,"\nconcatenacion - constanteString OP_CONCAT ID");
                                         fflush(stdout);
-                                        auxSymbol = getSymbol($3);
-                                        if(strcmp(auxSymbol.tipo,"string")!=0){
-                                            auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
-                                        }
+                                        // auxSymbol = getSymbol($3);
+                                        // if(strcmp(auxSymbol.tipo,"string")!=0){
+                                        //     auxSymbol = nullSymbol; yyerror("Tipos incompatibles");
+                                        // }
                                         fprintf(stdout,"\nacá hay que validar concatenacion: constanteString OP_CONCAT ID");
                                         fflush(stdout);
-                                        validarTipos("string");
+                                        // validarTipos("string");
                                         apilarPolaca($3);
                                         apilarPolaca("++"); }
     | constanteString OP_CONCAT constanteString {   fprintf(stdout,"\nconcatenacion - constanteString OP_CONCAT constanteString");
                                                     fflush(stdout);
-                                                    validarTipos("string");
+                                                    // validarTipos("string");
                                                     apilarPolaca("++");     }
     | constanteString                   {   fprintf(stdout,"\nconcatenacion - constanteString");
                                             fflush(stdout);
@@ -550,19 +555,19 @@ expresion:
 termino: 
     termino OP_MUL factor       {   fprintf(stdout,"\ntermino - termino OP_MUL factor"); 
                                     fflush(stdout);
-                                    validarTipos("float");
+                                    // validarTipos("float");
                                     apilarPolaca("*");  }
     | termino OP_DIV factor     {   fprintf(stdout,"\ntermino - termino OP_DIV factor"); 
                                     fflush(stdout);
-                                    validarTipos("float");
+                                    // validarTipos("float");
                                     apilarPolaca("/");  }
     | termino DIV factor        {   fprintf(stdout,"\ntermino - termino DIV factor"); 
                                     fflush(stdout);
-                                    validarTipos("float");
+                                    // validarTipos("float");
                                     apilarPolaca("DIV");    }
     | termino MOD factor        {   fprintf(stdout,"\ntermino - termino MOD factor"); 
                                     fflush(stdout);
-                                    validarTipos("float");
+                                    // validarTipos("float");
                                     apilarPolaca("MOD");    }
     | factor                    {   fprintf(stdout,"\ntermino - factor");
                                     fflush(stdout);   }
@@ -908,14 +913,12 @@ int desapilarWhile(){
 funcion que saca de la pila una etiqueta
 ***************************************************/
 void desapilarEtiqueta(){
-
     topeEtiquetas = topeEtiquetas - 1;
     strcpy(EtiqDesa,pilaEtiquetas[topeEtiquetas]);
 	strcpy(pilaEtiquetas[topeEtiquetas],"");
 }
 
 void desapilarEtiquetaW(){
-
     topeEtiquetasW--;
     strcpy(EtiqDesaW,pilaEtiquetasW[topeEtiquetasW]);
 	strcpy(pilaEtiquetasW[topeEtiquetasW],"");
@@ -942,10 +945,6 @@ void yyerror(char *msg){
     fflush(stderr);
     fprintf(stderr, "\n\n--- ERROR ---\nAt line %d: \'%s\'.\n\n", yylineno, msg);
     exit(1);
-}
-
-void imprimirPorConsola(char *str){
-    fflush(stdout);
 }
 
 void reemplazarBlancos(char *cad){
