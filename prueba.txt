@@ -21,6 +21,8 @@ d1 := 12.1;
 d1 := -12.1;
 y := false;
 
+-/  Asi son los comentarios en el 2do cuat de Lyc -/ Comentario /- /-
+
 r1 := r2 := 1+2;
 
 write "Escribir output en pantalla";
@@ -44,7 +46,7 @@ b:= b * AVG([1, 2, 3]);
 
 if(INLIST(a1;[a1+b; a1*(a1+b);48; 25/5; 32.3 ]) )
 {
-    write a1;
+    write a1; -/  Comentario anidado /-
 }
 
 -/  Prueba INLIST con if /-

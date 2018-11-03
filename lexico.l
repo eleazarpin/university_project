@@ -28,8 +28,7 @@ BOOLEANO 				true|false
 ENTERO          		-?{SINCERO}+{DIGITO}*|0
 REAL            		-?{DIGITO}*["."]{DIGITO}+
 STRING         			[\"]([^"]|\\.)*[\"]
-COMENTARIO				{INICIO_COM}[^\-\/]*{FIN_COM}
-COMENTARIO_MULTINIVEL	{INICIO_COM}[^\-\/]*{COMENTARIO}[^\-\/]*{FIN_COM}
+COMENTARIO				{INICIO_COM}.*{FIN_COM}
 ID          			{LETRA}({LETRA}|{DIGITO}|[_-])*
 %%
 write|WRITE 			{	return WRITE;	}
