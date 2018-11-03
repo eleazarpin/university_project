@@ -83,10 +83,9 @@ DIV         			{	return DIV;	}
 {REAL}      			{
 							strcpy(yylval.s, yytext);	
 							double casteado = atof(yytext);
-							printf("\ncasteado es: %f", casteado);
 							if(casteado < -32768.000000 || casteado > FLT_MAX) {
 								char msg[100];
-								sprintf(msg, "ERROR Lexico - Float \'%f\' fuera de rango. Debe estar entre [1.17549e-38; 3.40282e38]", casteado);
+								sprintf(msg, "ERROR Lexico - Float \'%f\' fuera de rango. Debe estar entre [-32768.000000; 3.40282e38]", casteado);
 								yyerror(msg);
 							}
 							return REAL;

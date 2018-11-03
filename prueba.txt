@@ -18,11 +18,12 @@ a1 := 0;
 c1 := 2;
 b := 1;
 d1 := 12.1;
+d1 := -12.1;
 y := false;
 
 r1 := r2 := 1+2;
 
-write "Escribir pantalla";
+write "Escribir output en pantalla";
 pri := "Hola";
 
 -/  Prueba while /-
