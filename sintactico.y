@@ -162,7 +162,7 @@ void consolidateIdType();
 %}
 
 %union{
- char s[20];
+ char s[500];
 }
 
 %token IF ELSE WHILE DEFVAR ENDDEF WRITE READ AVG INLIST

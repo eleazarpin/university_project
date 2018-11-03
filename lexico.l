@@ -71,7 +71,7 @@ DIV         			{	return DIV;	}
 {ENTERO}    			{
 							strcpy(yylval.s, yytext);
 							int casteado = atoi(yytext);
-							if(casteado < -32768 || casteado > 32767) {
+							if(casteado < -32768 || casteado > 32768) {
 								char msg[100];
 								sprintf(msg, "ERROR Lexico - Entero \'%d\' fuera de rango. Debe estar entre [-32768; 32767]", casteado);
 								yyerror(msg);
@@ -83,19 +83,20 @@ DIV         			{	return DIV;	}
 {REAL}      			{
 							strcpy(yylval.s, yytext);	
 							double casteado = atof(yytext);
-							if(casteado < FLT_MIN || casteado > FLT_MAX) {
+							printf("\ncasteado es: %f", casteado);
+							if(casteado < -32768.000000 || casteado > FLT_MAX) {
 								char msg[100];
 								sprintf(msg, "ERROR Lexico - Float \'%f\' fuera de rango. Debe estar entre [1.17549e-38; 3.40282e38]", casteado);
 								yyerror(msg);
 							}
 							return REAL;
 						}
-{STRING}    			{	strcpy(yylval.s, yytext);
+{STRING}    			{	
+							strcpy(yylval.s, yytext);
 							int longitud = strlen(yytext);
-							//en lugar de 30 verifica con 32 porque el string viene entre comillas
 							if(longitud > 32){
-								char msg[100];
-								sprintf(msg, "ERROR Lexico - Cadena \'%s\' demasiado larga. Maximo de 30 caracteres", yytext);
+								char msg[150];
+								sprintf(msg, "ERROR Lexico - Cadena \'%s\' demasiado larga. Maximo de 30 caracteres y contiene: %d", yytext, longitud-2);
 								yyerror(msg);
 							}
 							return STRING_CONST;	
