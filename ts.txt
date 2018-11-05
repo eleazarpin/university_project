@@ -1,5 +1,5 @@
 Nombre                   |Tipo                     |Valor                    |Longitud                 |Limite                   
-_a1                      |int                      |a1                       |2                        |1                        
+_a1                      |int                      |a1                       |2                        |0                        
 _a2                      |float                    |a2                       |2                        |0                        
 _a3                      |float                    |a3                       |2                        |0                        
 _b                       |int                      |b                        |1                        |0                        
@@ -16,8 +16,9 @@ _0                       |cint                     |0                        |1 
 _2                       |cint                     |2                        |1                        |0                        
 _1                       |cint                     |1                        |1                        |3                        
 _12.1                    |cfloat                   |12.1                     |4                        |6                        
+_-12.1                   |cfloat                   |-12.1                    |5                        |6                        
 _false                   |cbool                    |false                    |5                        |7                        
-_escribir pantalla       |cstring                  |Escribir pantalla        |17                       |0                        
+_escribir output en pantalla|cstring                  |Escribir output en pantalla|27                       |0                        
 _hola                    |cstring                  |Hola                     |4                        |32766                    
 _10                      |cint                     |10                       |2                        |0                        
 _48                      |cint                     |48                       |2                        |1                        

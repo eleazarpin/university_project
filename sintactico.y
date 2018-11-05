@@ -22,7 +22,8 @@ void yyerror(char *msg);
 
 int contAVG=1; // Cantidad de expresiones de la funcion avg
 char stringAVG[25]; //guardamos el contador de AVG
-
+int auxAVG=0;
+char auxIdAVG[15]; //variable auxiliar donde guardare el resulta final de la AVG que colocare en el ID
 char stringBoolInlist[25];
 char auxInlistwhile[25]; // usamos para cerrar el while con la funcion INLIST como condicion
 
@@ -173,6 +174,7 @@ void consolidateIdType();
 %token OP_CONCAT OP_SUM OP_RES OP_DIV OP_MUL MOD DIV 
 %token CMP_MAY CMP_MEN CMP_MAYI CMP_MENI CMP_DIST CMP_IGUAL
 %token ASIG
+%token AND OR
 %type <s> expresion
 
 %%
@@ -345,10 +347,20 @@ iteracion:
     ;
 
 asignacion: 
-    lista_asignacion expresion  {   fprintf(stdout,"\nasignacion - ID ASIG expresion");
-                                    fflush(stdout);
-                                    insertarPolaca($2,posicionActualPol);
-                                    posicionActualPol = 0;
+    lista_asignacion expresion  {   
+                                 if(auxAVG==0){
+                                        fprintf(stdout,"\nasignacion - ID ASIG expresion");
+                                        fflush(stdout);
+                                        insertarPolaca($2,posicionActualPol);
+                                        posicionActualPol = 0;
+                                    }
+                                      else{
+                                          //guardo el resultado final en el ID del AVG
+                                            apilarPolaca(auxIdAVG);
+                                            apilarPolaca("_auxAVG");  
+                                            apilarPolaca("=");
+                                            strcpy(auxIdAVG,"");
+                                        }
                                 }
     | lista_asignacion concatenacion     {  fprintf(stdout,"\nasignacion - ID ASIG concatenacion");
                                             fflush(stdout);
@@ -364,19 +376,28 @@ asignacion:
     ;
 
 lista_asignacion:
-    ID ASIG                     {   fprintf(stdout,"\nlista_asignacion - ID ASIG"); 
-                                    fflush(stdout); 
-                                    auxSymbol = getSymbol($1);
-                                    // validarTipos(auxSymbol.tipo);
-                                    auxSymbol = nullSymbol;
-                                    apilarPolaca("_aux");
-                                    posicionActualPol = posPolaca;
-                                    apilarPolaca("");
-                                    apilarPolaca("=");
-                                    apilarPolaca($1);
-                                    apilarPolaca("_aux");
-                                    apilarPolaca("=");
+    ID ASIG                     {   
+                                    if(auxAVG==0)
+                                    {
+                                        fprintf(stdout,"\nlista_asignacion - ID ASIG"); 
+                                        fflush(stdout); 
+                                        auxSymbol = getSymbol($1);
+                                        // validarTipos(auxSymbol.tipo);
+                                        auxSymbol = nullSymbol;
+                                        apilarPolaca("_aux");
+                                        posicionActualPol = posPolaca;
+                                        apilarPolaca("");
+                                        apilarPolaca("=");
+                                        apilarPolaca($1);
+                                        apilarPolaca("_aux");
+                                        apilarPolaca("=");
                                     }
+                                    else
+                                        {
+                                            strcpy(auxIdAVG,$1);
+                                        }
+                                      
+                                }
     | lista_asignacion ID ASIG    {     fprintf(stdout,"\nlista_asignacion - lista_asignacion ID ASIG");
                                         fflush(stdout); 
                                         apilarPolaca($2);
@@ -480,6 +501,16 @@ condicion:
                                         apilarEtiqueta(Etiqueta);
                                         apilarPolaca(Etiqueta); 
                                         apilarPolaca("JNZ");    }
+
+
+    | P_A condicion P_C AND P_A condicion P_C   {   fprintf(stdout,"\ncondicion - AND");
+
+    }
+
+    | P_A condicion P_C OR P_A condicion P_C    {   fprintf(stdout,"\ncondicion - OR");
+
+    }
+
     | INLIST P_A ID                 {   fprintf(stdout,"\ncondicion - INLIST P_A ID");
                                         fflush(stdout);
                                         //fprintf(stdout,"CONDICION: INLIST \n");
@@ -588,22 +619,39 @@ factor:
     | avg                       {   fprintf(stdout,"\nfactor - avg");
                                     fflush(stdout);
                                     sprintf(stringAVG, "%d", contAVG); // replaced itoa(contAVG, stringAVG, 10) for this.
+                                    apilarPolaca("_auxAVG");
                                     apilarPolaca(stringAVG);
                                     apilarPolaca("/");  }
     ;
 
 avg: 
-    AVG P_A C_A contenido_avg C_C P_C   {   fprintf(stdout,"\navg - AVG P_A C_A contenido_avg C_C P_C");
-                                            fflush(stdout); }
+    AVG {   auxAVG=1;
+            apilarPolaca("_auxAVG");//creo mi variable "_auxAVG" para acumular los resultados intermedios
+            apilarPolaca("0");//inicializo la variable "_auxAVG" en 0
+            apilarPolaca("=");
+        
+        } P_A C_A contenido_avg C_C P_C   {   fprintf(stdout,"\navg - AVG P_A C_A contenido_avg C_C P_C");
+                                                        fflush(stdout); 
+                                                        auxAVG=0;
+                                            }
 	;
 
 contenido_avg: 
-    expresion    					{   fprintf(stdout,"\ncontenido_avg - expresion ---> Cont:=1");
-                                        fflush(stdout); }
-	| contenido_avg COMA expresion  {   contAVG++; 
-                                        fprintf(stdout,"\ncontenido_avg - contenido_avg COMA expresion %d", contAVG); 
-                                        fflush(stdout);
-                                        apilarPolaca("+");  }
+                 {apilarPolaca("_auxAVG");} expresion    					
+    
+                                        {   fprintf(stdout,"\ncontenido_avg - expresion ---> Cont:=1");
+                                            fflush(stdout);
+                                            apilarPolaca("_auxAVG");
+                                            apilarPolaca("+");
+                                            apilarPolaca("=");
+                                         }
+	| contenido_avg COMA {apilarPolaca("_auxAVG");} expresion  {    contAVG++; 
+                                                                    fprintf(stdout,"\ncontenido_avg - contenido_avg COMA expresion %d", contAVG); 
+                                                                    fflush(stdout);
+                                                                    apilarPolaca("_auxAVG");
+                                                                    apilarPolaca("+"); 
+                                                                    apilarPolaca("=");
+                                                                 }
     ;
 
 constanteNumerica: 

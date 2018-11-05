@@ -58,6 +58,8 @@ ENDDEF      			{	return ENDDEF;	}
 "*"         			{	return OP_MUL;	}
 "INLIST"				{	return INLIST;	}
 "AVG"					{	return AVG;	}
+"AND"					{	return AND;	}
+"OR"					{	return OR;	}
 MOD         			{	return MOD;	}
 DIV         			{	return DIV;	}
 ">"         			{	return CMP_MAY;	}
@@ -70,7 +72,7 @@ DIV         			{	return DIV;	}
 {ENTERO}    			{
 							strcpy(yylval.s, yytext);
 							int casteado = atoi(yytext);
-							if(casteado < -32768 || casteado > 32768) {
+							if(casteado < -32768 || casteado > 32767) {
 								char msg[100];
 								sprintf(msg, "ERROR Lexico - Entero \'%d\' fuera de rango. Debe estar entre [-32768; 32767]", casteado);
 								yyerror(msg);
@@ -89,9 +91,9 @@ DIV         			{	return DIV;	}
 							}
 							return REAL;
 						}
-{STRING}    			{	
-							strcpy(yylval.s, yytext);
+{STRING}    			{	strcpy(yylval.s, yytext);
 							int longitud = strlen(yytext);
+							//en lugar de 30 verifica con 32 porque el string viene entre comillas
 							if(longitud > 32){
 								char msg[150];
 								sprintf(msg, "ERROR Lexico - Cadena \'%s\' demasiado larga. Maximo de 30 caracteres y contiene: %d", yytext, longitud-2);
